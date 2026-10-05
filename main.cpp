@@ -1,10 +1,10 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 
 using namespace std;
 
 // ==========================================
-// 1. ????: Ship (??????? ??'???)
+// 1. КЛАС: Ship (Базовий об'єкт)
 // ==========================================
 class Ship {
 private:
@@ -15,19 +15,19 @@ public:
     Ship(string shipName, int shipSize) {
         name = shipName;
         size = shipSize;
-        cout << "[Ship]: ???????? ???????? '" << name << "' (??????: " << size << ")\n";
+        cout << "[Ship]: Створено корабель '" << name << "' (Розмір: " << size << ")\n";
     }
 
     ~Ship() {
-        cout << "[Ship]: ??????? ???????? '" << name << "'\n";
+        cout << "[Ship]: Знищено корабель '" << name << "'\n";
     }
 
     string getName() const { return name; }
     int getSize() const { return size; }
 };
-
+     
 // ==========================================
-// 2. ????: FieldManager (???????? ????)
+// 2. КЛАС: FieldManager (Менеджер поля)
 // ==========================================
 class FieldManager {
 private:
@@ -41,11 +41,11 @@ public:
                 grid[r][c] = '~';
             }
         }
-        cout << "[FieldManager]: ???????? ??????? ???? 10x10.\n";
+        cout << "[FieldManager]: Створено порожнє поле 10x10.\n";
     }
 
     ~FieldManager() {
-        cout << "[FieldManager]: ?????? ???? ???????.\n";
+        cout << "[FieldManager]: Ігрове поле знищено.\n";
     }
 
     bool placeShip(const Ship& ship, int x, int y, bool isHorizontal) {
@@ -53,7 +53,7 @@ public:
 
         if (isHorizontal) {
             if (x < 0 || x + s > SIZE || y < 0 || y >= SIZE) {
-                cout << "[???????]: ???????? ???????? ?? ???? ????!\n";
+                cout << "[ПОМИЛКА]: Корабель виходить за межі поля!\n";
                 return false;
             }
             for (int i = 0; i < s; i++) {
@@ -62,7 +62,7 @@ public:
         }
         else {
             if (y < 0 || y + s > SIZE || x < 0 || x >= SIZE) {
-                cout << "[???????]: ???????? ???????? ?? ???? ????!\n";
+                cout << "[ПОМИЛКА]: Корабель виходить за межі поля!\n";
                 return false;
             }
             for (int i = 0; i < s; i++) {
@@ -70,13 +70,13 @@ public:
             }
         }
 
-        cout << "[FieldManager]: ??????? ?????????? '" << ship.getName()
-            << "' ? ?????????? (" << x << ", " << y << ")\n";
+        cout << "[FieldManager]: Успішно поставлено '" << ship.getName()
+            << "' у координати (" << x << ", " << y << ")\n";
         return true;
     }
 
     void printField() const {
-        cout << "\n=== ?????? ???? (10x10) ===\n  ";
+        cout << "\n=== ІГРОВЕ ПОЛЕ (10x10) ===\n  ";
         for (int x = 0; x < SIZE; x++) cout << x << " ";
         cout << "\n";
 
@@ -92,19 +92,19 @@ public:
 };
 
 // ==========================================
-// 3. ??????? ????-??????
+// 3. ФУНКЦІЯ ЮНІТ-ТЕСТІВ
 // ==========================================
 void runTests() {
-    cout << "\n=== ?????? ???????????? ?????? ===\n";
+    cout << "\n=== ЗАПУСК АВТОМАТИЧНИХ ТЕСТІВ ===\n";
     FieldManager testField;
-    Ship testBoat("???????? ?????", 2);
+    Ship testBoat("Тестовий Човен", 2);
 
-    cout << "\n-- ???? 1: ??????? ?????????? --\n";
+    cout << "\n-- Тест 1: Успішне розміщення --\n";
     testField.placeShip(testBoat, 0, 0, true);
 
-    cout << "\n-- ???? 2: ????? ?? ???? ???? --\n";
+    cout << "\n-- Тест 2: Вихід за межі поля --\n";
     testField.placeShip(testBoat, 9, 9, true);
 
-    cout << "\n=== ????? ????????? ===\n\n";
+    cout << "\n=== ТЕСТИ ЗАВЕРШЕНО ===\n\n";
 }
 
