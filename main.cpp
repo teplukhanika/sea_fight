@@ -1,136 +1,57 @@
-﻿# sea_fight
-//морський бій на мінімалках
-#include <iostream>
-#include <string>
+﻿#include <iostream>
+#include "Ship.h"
+#include "FieldManager.h"
 
 using namespace std;
 
+int main() {
 
-class Ship {
+    cout << "тест 1: Клас Ship \n";
+    Ship ship1("Катер", 2);
+    Ship ship2("Лінкор", 4);
 
-private:
-    string name;
-    int size;
+    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n\n";
 
-public:
+    cout << "тест 2: Розміщення кораблів \n";
+    FieldManager field;
 
-    Ship(string shipName, int shipSize) {
-        name = shipName;
-        size = shipSize;
-        cout << "[Ship]: Створено корабель '" << name << "' (Розмір: " << size << ")\n";
+    field.placeShip(ship1, 0, 0, true);
+    field.placeShip(ship2, 3, 2, false);
+
+    field.printField();
+
+    cout << "тест 3: Перевірка межі та стану\n";
+
+    bool validPlace = field.canPlace(5, 5, 3, true);
+    cout << "Чи можна поставити у (5,5), розмір 3, горизонт: ";
+    if (validPlace) {
+        cout << "так\n";
+    }
+    else {
+        cout << "ні\n";
     }
 
-    ~Ship() {
-        cout << "[Ship]: Знищено корабель'" << name << "'\n";
+    bool invalidPlace = field.canPlace(9, 9, 3, true);
+    cout << "Чи можна поставити у (9,9), розмір 3, горизонт (за межі): ";
+    if (invalidPlace) {
+        cout << "так\n\n";
+    }
+    else {
+        cout << "ні\n\n";
     }
 
-    string getName() const {
-        return name;
-    }
+    cout << "тест 4: Постріли по полю \n";
 
-    int getSize() const {
-        return size;
-    }
-};
+    field.shoot(0, 0);
 
-class FieldManager {
+    field.shoot(5, 5);
 
-private:
-    static const int SIZE = 10;
-    char grid[SIZE][SIZE];
-public:
-    FieldManager() {
-        for (int r = 0; r < SIZE; r++) {
-            for (int c = 0; c < SIZE; c++) {
-                grid[r][c] = '~';
-            }
-        }
-        cout << "[FieldManager]: Створено порожнє поле 10x10.\n";
-    }
+    field.shoot(0, 0);
 
+    field.shoot(12, 3);
 
-    ~FieldManager() {
-        cout << "[FieldManager]: Ігрове поле знищено.\n";
-    }
+    cout << "\nСтан поля після всіх дій \n";
+    field.printField();
 
-    void placeShip(const Ship& ship, int x, int y, bool isHorizontal) {
-        int s = ship.getSize();
-
-        if (isHorizontal) {
-            for (int i = 0; i < s; i++) {
-                grid[y][x + i] = 'S';
-            }
-        }
-        else {
-            for (int i = 0; i < s; i++) {
-                grid[y + i][x] = 'S';
-            }
-        }
-
-        cout << "[FieldManager]: Поставлено корабель '" << ship.getName()
-            << "' у координати (" << x << ", " << y << ")\n";
-    }
-
-    void printField() const {
-
-        cout << "\n<<< Ігрове поле (10x10) >>>\n  ";
-        for (int x = 0; x < SIZE; x++) {
-            cout << x << " ";
-        }
-        cout << "\n";
-
-        for (int y = 0; y < SIZE; y++) {
-            cout << y << " ";
-            for (int x = 0; x < SIZE; x++) {
-                cout << grid[y][x] << " ";
-            }
-            cout << "\n";
-        }
-        cout << "---------------------------\n\n";
-    }
-
-    bool shoot(int x, int y) {
-        if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
-            cout << "[FieldManager]: Постріл за межі поля:(\n";
-            return false;
-        }
-
-        if (grid[y][x] == 'S') {
-            grid[y][x] = 'X'; 
-            cout << "[FieldManager]: :) Влучання у координати (" << x << ", " << y << ")!\n";
-            return true;
-        }
-        else if (grid[y][x] == '~') {
-            grid[y][x] = '*'; 
-            cout << "[FieldManager]: :( Промах у координати (" << x << ", " << y << ").\n";
-            return false;
-        }
-        else {
-            cout << "[FieldManager]: Сюди вже стріляли:(\n";
-            return false;
-        }
-    }
-
-    bool canPlace(int x, int y, int size, bool isHorizontal) const {
-        for (int i = 0; i < size; i++) {
-            int cx = x;
-            int cy = y;
-
-            if (isHorizontal) {
-                cx = x + i;
-            }
-            else {
-                cy = y + i;
-            }
-
-            
-            if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE) {
-                return false;
-            }
-
-            //метод перевірки розташування поруч корабля
-        }
-        return true; 
-    }
-};
-
+    return 0;
+}
