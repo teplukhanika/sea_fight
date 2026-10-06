@@ -1,4 +1,6 @@
 ﻿#include <iostream>
+#include <windows.h>
+#include <clocale>
 #include "Ship.h"
 #include "FieldManager.h"
 
@@ -6,11 +8,16 @@ using namespace std;
 
 int main() {
 
-    cout << "тест 1: Клас Ship \n";
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+    setlocale(LC_ALL, ".UTF8");
+
+    cout << "тест 1: Клас Ship \n\n";
     Ship ship1("Катер", 2);
     Ship ship2("Лінкор", 4);
 
-    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n\n";
+    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n";
+    cout << "Перевірка геттерів: " << ship2.getName() << " (Розмір: " << ship2.getSize() << ")\n\n";
 
     cout << "тест 2: Розміщення кораблів \n";
     FieldManager field;

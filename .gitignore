@@ -4,3 +4,5 @@
 
 /.vs/sea_fight/v17
 /.vs
+*.obj
+*.exe
