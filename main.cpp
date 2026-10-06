@@ -40,7 +40,8 @@ int main() {
     Ship ship1("Катер", 2);
     Ship ship2("Лінкор", 4);
 
-    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n\n";
+    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n";
+    cout << "Перевірка геттерів: " << ship2.getName() << " (Розмір: " << ship2.getSize() << ")\n\n";
 
     cout << "тест 2: Розміщення кораблів \n";
     FieldManager field;
