@@ -6,3 +6,16 @@
 /.vs
 *.obj
 *.exe
+x64/
+Debug/
+Release/
+seafighttt/x64/
+seafighttt/Debug/
+*.user
+*.pdb
+*.exe
+*.obj
+*.ilk
+*.tlog
+*.recipe
+*.log
