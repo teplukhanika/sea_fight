@@ -1,8 +1,10 @@
 ﻿#include <iostream>
 #include <windows.h>
-#include <clocale>
 #include "Ship.h"
 #include "FieldManager.h"
+
+#include "PlayerProfile.h"
+#include "StoreManager.h"
 
 using namespace std;
 
@@ -10,9 +12,31 @@ int main() {
 
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
-    setlocale(LC_ALL, ".UTF8");
 
-    cout << "тест 1: Клас Ship \n\n";
+    cout << "Початок тестового сценарію роботи магазину, та профілю гравця..." << endl;
+
+    PlayerProfile player1("Ання");
+    StoreManager store;
+
+    player1.displayProfile();
+
+    store.displayCatalog();
+
+    store.buyItem(player1, "Міна");
+    store.buyItem(player1, "Авіаудар (Літак)");
+
+    cout << "\n--- Імітація ігрового бою ---" << endl;
+    player1.recordWin();
+
+    store.buyItem(player1, "Авіаудар (Літак)");
+
+    player1.displayProfile();
+
+    cout << "Цей тестовий сценарій завершено." << endl;
+
+
+
+    cout << "тест 1: Клас Ship \n";
     Ship ship1("Катер", 2);
     Ship ship2("Лінкор", 4);
 
