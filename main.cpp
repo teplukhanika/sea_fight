@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "Ship.h"
 #include "FieldManager.h"
-
+#include "GameModeManager.h"
 #include "PlayerProfile.h"
 #include "StoreManager.h"
 
@@ -87,6 +87,31 @@ int main() {
 
     cout << "\nСтан поля після всіх дій \n";
     field.printField();
+    cout << "тест 5: GameModeManager\n\n";
+
+    GameModeManager modeManager;
+
+    cout << "режим PvE (Гра з ботом)\n";
+    modeManager.selectGameMode(GameMode::PVE, "Alex");
+    modeManager.startMatch();
+    modeManager.printStatus();
+
+    cout << "\nСимуляція ходів у PvE (промах та влучання)\n";
+    modeManager.switchTurn(false); 
+    modeManager.switchTurn(true);  
+    modeManager.switchTurn(false); 
+    modeManager.printStatus();
+
+    cout << "\nЗавершення PvE та перемикання на PvP\n";
+    modeManager.endMatch();
+    
+    cout << "\n";
+    modeManager.selectGameMode(GameMode::PVP, "Alex", "Max");
+    modeManager.startMatch();
+    modeManager.switchTurn(false);
+    modeManager.printStatus();
+
+    cout << "відповіді методи класу працюють коректно\n";
 
 
 
