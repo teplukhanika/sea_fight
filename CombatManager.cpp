@@ -1,32 +1,41 @@
 #include "CombatManager.h"
 #include <iostream>
 
-CombatManager::CombatManager(int startPlayer) : currentPlayer(startPlayer) {}
+using namespace std;
+
+CombatManager::CombatManager(int startPlayer)
+    : currentPlayer(startPlayer), historyCount(0) {
+}
 
 ShotResult CombatManager::processShot(FieldManager& field, int x, int y) {
-    std::cout << "\nГравець " << currentPlayer << " робить постріл у (" << x << ", " << y << ")...\n";
+    cout << "\n Гравець " << currentPlayer << " робить постріл у (" << x << ", " << y << ")...\n";
+
 
     bool isHit = field.shoot(x, y);
 
     ShotResult res = isHit ? ShotResult::HIT : ShotResult::MISS;
 
     if (res == ShotResult::HIT) {
-        std::cout << "Влучання! Гравець " << currentPlayer << " отримує додатковий хід.\n";
+        cout << " Влучання! Гравець " << currentPlayer << " отримує додатковий хід.\n";
     }
     else {
-        std::cout << "Промах. Хід переходить до іншого гравця.\n";
+        cout << "Промах. Хід переходить до іншого гравця.\n";
         switchTurn();
     }
 
-    history.push_back(MoveRecord(x, y, res, currentPlayer));
+
+    if (historyCount < MAX_HISTORY) {
+        history[historyCount] = MoveRecord(x, y, res, currentPlayer);
+        historyCount++;
+    }
 
     return res;
 }
 
-void CombatManager::volleyFire(FieldManager& field, const std::vector<std::pair<int, int>>& targets) {
-    std::cout << "\nГравець " << currentPlayer << " викликає Авіаудар!\n";
-    for (const auto& target : targets) {
-        processShot(field, target.first, target.second);
+void CombatManager::volleyFire(FieldManager& field, const int targetX[], const int targetY[], int count) {
+    cout << "\n Гравець " << currentPlayer << " викликає Авіаудар!\n";
+    for (int i = 0; i < count; ++i) {
+        processShot(field, targetX[i], targetY[i]);
     }
 }
 
@@ -39,8 +48,8 @@ int CombatManager::getCurrentPlayer() const {
 }
 
 void CombatManager::printHistory() const {
-    std::cout << "\nЖУРНАЛ БОЮ\n";
-    for (const auto& record : history) {
-        std::cout << record.toString() << "\n";
+    cout << "ЖУРНАЛ БОЮ\n";
+    for (int i = 0; i < historyCount; ++i) {
+        cout << history[i].toString() << "\n";
     }
 }
