@@ -35,7 +35,7 @@ void PlayerProfile::addItemToInventory(const string& itemName, int quantity) {
 }
 
 void PlayerProfile::displayProfile() const {
-    cout << "\n=== ПРОФІЛЬ ГРАВЦЯ: " << name << " ===" << endl;
+    cout << "\n|^^^^ ПРОФІЛЬ ГРАВЦЯ: " << name << " ^^^^|" << endl;
     cout << "Баланс: " << coins << " монет" << endl;
     cout << "Статистика: " << wins << " перемог / " << losses << " поразок" << endl;
     cout << "Інвентар:" << endl;
@@ -47,5 +47,5 @@ void PlayerProfile::displayProfile() const {
             cout << "  - " << item.first << ": " << item.second << " шт." << endl;
         }
     }
-    cout << "=================================\n" << endl;
+    cout << "|______________________________|\n" << endl;
 }

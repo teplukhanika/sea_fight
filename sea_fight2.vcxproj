@@ -133,14 +133,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="GameModeManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MoveRecord.cpp" />
     <ClCompile Include="PlayerProfile.cpp" />
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CombatManager.h" />
+    <ClInclude Include="MoveRecord.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="GameModeManager.h" />
     <ClInclude Include="PlayerProfile.h" />
