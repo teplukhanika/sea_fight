@@ -18,35 +18,35 @@ void GameModeManager::selectGameMode(GameMode mode, const string& p1Name, const 
 
     if (mode == GameMode::PVE) {
         player2Name = "ШІ (Бот)";
-        cout << "[GameModeManager] Обрано режим: PvE (Гра з ботом).\n";
+        cout << "GameModeManager: Обрано режим: PvE (Гра з ботом).\n";
     }
     else if (mode == GameMode::PVP) {
         player2Name = p2Name;
-        cout << "[GameModeManager] Обрано режим: PvP (Мультиплеєр).\n";
+        cout << "GameModeManager: Обрано режим: PvP (Мультиплеєр).\n";
     }
-    cout << "[GameModeManager] Учасники: " << player1Name << " проти " << player2Name << "\n";
+    cout << "GameModeManager: Учасники: " << player1Name << " проти " << player2Name << "\n";
 }
 
 void GameModeManager::startMatch() {
     if (currentMode == GameMode::NOT_SELECTED) {
-        cout << "[Помилка] Неможливо почати гру: режим не обрано!\n";
+        cout << "Помилка: Неможливо почати гру: режим не обрано!\n";
         return;
     }
     isGameActive = true;
     turnNumber = 1;
     currentTurn = TurnOwner::PLAYER_1;
-    cout << "[GameModeManager] Матч розпочато! Хід №" << turnNumber
+    cout << "GameModeManager: Матч розпочато! Хід №" << turnNumber
         << ". Першим ходить: " << getCurrentPlayerName() << "\n";
 }
 
 void GameModeManager::switchTurn(bool hitSuccess) {
     if (!isGameActive) {
-        cout << "[Помилка] Гра не активна!\n";
+        cout << "Помилка: Гра не активна!\n";
         return;
     }
 
     if (hitSuccess) {
-        cout << "[GameModeManager] Влучання! " << getCurrentPlayerName()
+        cout << "GameModeManager: Влучання! " << getCurrentPlayerName()
             << " отримує додатковий хід.\n";
         return;
     }
@@ -59,14 +59,14 @@ void GameModeManager::switchTurn(bool hitSuccess) {
         turnNumber++;
     }
 
-    cout << "[GameModeManager] Перехід ходу (Раунд " << turnNumber << "). Тепер ходить: "
+    cout << "GameModeManager: Перехід ходу (Раунд " << turnNumber << "). Тепер ходить: "
         << getCurrentPlayerName() << "\n";
 }
 
 void GameModeManager::endMatch() {
     if (!isGameActive) return;
     isGameActive = false;
-    cout << "[GameModeManager] Матч завершено на раунді " << turnNumber
+    cout << "GameModeManager: Матч завершено на раунді " << turnNumber
         << "! Переможець за останнім ходом: " << getCurrentPlayerName() << "\n";
 }
 
