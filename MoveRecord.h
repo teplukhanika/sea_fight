@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+using namespace std;
+
 enum class ShotResult { MISS, HIT, DESTROYED, INVALID };
 
 class MoveRecord {
@@ -11,6 +13,8 @@ private:
     int playerId;
 
 public:
+    MoveRecord();
+
     MoveRecord(int targetX, int targetY, ShotResult res, int player);
 
     int getX() const;
@@ -18,5 +22,5 @@ public:
     ShotResult getResult() const;
     int getPlayerId() const;
 
-    std::string toString() const;
+    string toString() const;
 };
