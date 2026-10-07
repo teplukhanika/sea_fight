@@ -19,7 +19,7 @@
 - Класи: `PlayerProfile` (дані та монети), `StoreManager` (покупки та спецзасоби).
 
 ##  UML Use Case Diagram (Діаграма прецедентів)
-ЦИБАНЬ СЮДИИИИ
+<img width="2081" height="819" alt="OOP2" src="https://github.com/user-attachments/assets/85a664de-ab4c-40e7-b59f-6bf1dd15c7fa" />
 
 ## Таблиця зображення ігрового поля
 <img width="1200" height="780" alt="UML Use Case Diagram" src="https://github.com/user-attachments/assets/b51c2325-108b-4b18-ab08-ff245da06285" />
