@@ -6,15 +6,15 @@
 StoreManager::StoreManager() {
     catalog["Міна"] = 3;
     catalog["Радар"] = 5;
-    catalog["Авіаудар (Літак)"] = 8;
+    catalog["Авіаудар"] = 8;
 }
 
 void StoreManager::displayCatalog() const {
-    cout << "\n--- МАГАЗИН СПЕЦЗАСОБІВ ---" << endl;
+    cout << "\n|___ МАГАЗИН СПЕЦЗАСОБІВ ___|" << endl;
     for (const auto& item : catalog) {
-        cout << setw(18) << left << item.first << " | Ціна: " << item.second << " монет" << endl;
+        cout << item.first << " | Ціна: " << item.second << " монет" << endl;
     }
-    cout << "---------------------------\n" << endl;
+    cout << "|___________________________|\n" << endl;
 }
 
 void StoreManager::buyItem(PlayerProfile& player, const string& itemName) {

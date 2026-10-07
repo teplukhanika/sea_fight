@@ -8,7 +8,7 @@ using namespace std;
 
 class StoreManager {
 private:
-    std::map<string, int> catalog;
+    map<string, int> catalog;
 
 public:
     StoreManager();
