@@ -30,6 +30,10 @@
     <ClCompile Include="StoreManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MoveRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatManager.cpp">
     <ClCompile Include="GameModeManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -47,6 +51,10 @@
     <ClInclude Include="StoreManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MoveRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatManager.h">
     <ClInclude Include="GameModeManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>

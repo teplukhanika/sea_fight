@@ -6,6 +6,10 @@
 #include "PlayerProfile.h"
 #include "StoreManager.h"
 
+
+#include "CombatManager.h"
+
+
 using namespace std;
 
 int main() {
@@ -108,6 +112,35 @@ int main() {
     modeManager.printStatus();
 
     cout << "відповіді методи класу працюють коректно\n";
+
+
+
+
+    cout << " Підготовка поля\n";
+    FieldManager combatField;
+    Ship ship3("Катер", 2);
+    Ship ship4("Лінкор", 4);
+
+    combatField.placeShip(ship3, 2, 2, true);
+    combatField.placeShip(ship4, 7, 5, false);
+
+    combatField.printField();
+
+    cout << "\nПеребіг бою\n";
+    CombatManager combat(1);
+
+    combat.processShot(combatField, 0, 0);
+    combat.processShot(combatField, 2, 2);
+    combat.processShot(combatField, 3, 2);
+
+    int strikeX[] = { 7, 7, 7 };
+    int strikeY[] = { 5, 6, 7 };
+    combat.volleyFire(combatField, strikeX, strikeY, 3);
+
+    cout << "\nСтан після бою\n";
+    combatField.printField();
+
+    combat.printHistory();
 
     return 0;
 }
