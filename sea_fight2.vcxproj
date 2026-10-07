@@ -134,11 +134,13 @@
   <ItemGroup>
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MoveRecord.cpp" />
     <ClCompile Include="PlayerProfile.cpp" />
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MoveRecord.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="PlayerProfile.h" />
     <ClInclude Include="ship.h" />
