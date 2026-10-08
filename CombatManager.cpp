@@ -27,8 +27,8 @@ ShotResult CombatManager::processShot(FieldManager& field, int x, int y) {
     if (historyCount < MAX_HISTORY) {
         history[historyCount] = MoveRecord(x, y, res, currentPlayer);
         historyCount++;
-    }
 
+    }
     return res;
 }
 
