@@ -30,24 +30,37 @@ bool FieldManager::isInside(int x, int y) const {
     return true;
 }
 void FieldManager::placeShip(const Ship& ship, int x, int y, bool isHorizontal) {
-    int s = ship.getSize();
+    MapLayer layer = ship.getLayer();
 
-    if (isHorizontal) {
-        for (int i = 0; i < s; i++) {
-            grid[y][x + i] = 'S';
-        }
+    if (!canPlace(x, y, ship.getSize(), isHorizontal, layer)) {
+        return false;
     }
-    else {
-        for (int i = 0; i < s; i++) {
-            grid[y + i][x] = 'S';
+
+    int l = static_cast<int>(layer);
+    ship.setPosition(x, y, isHorizontal);
+    ships.push_back(ship); // Зберігаємо об'єкт корабля
+
+    for (int i = 0; i < ship.getSize(); i++) {
+        int cx = x;
+        int cy = y;
+
+        if (isHorizontal) {
+            cx = x + i;
         }
+        else {
+            cy = y + i;
+        }
+
+        grid[l][cy][cx] = 'S';
     }
 
     cout << "[FieldManager]: Поставлено корабель '" << ship.getName()
         << "' у координати (" << x << ", " << y << ")\n";
+
+    return true;
 }
 
-void FieldManager::printField() const {
+void FieldManager::printField(MapLayer layer, bool fogOfWar) const {
     cout << "\n<<< Ігрове поле (10x10) >>>\n  ";
     for (int x = 0; x < SIZE; x++) {
         cout << x << " ";
@@ -90,7 +103,8 @@ bool FieldManager::shoot(int x, int y) {
     }
 }
 
-bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal) const {
+bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal, MapLayer layer) const {
+    int l = static_cast<int>(layer);
     for (int i = 0; i < size; i++) {
         int cx = x;
         int cy = y;
@@ -101,12 +115,22 @@ bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal) const {
         else {
             cy = y + i;
         }
-
-        if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE) {
+        if (!isInside(cx, cy)) {
             return false;
         }
 
-        // метод перевірки розташування поруч корабля
+        // Перевірка буферної зони навколо корабля
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int nx = cx + dx;
+                int ny = cy + dy;
+                if (isInside(nx, ny)) {
+                    if (grid[l][ny][nx] == 'S') {
+                        return false;
+                    }
+                }
+            }
+        }
     }
     return true;
 }
