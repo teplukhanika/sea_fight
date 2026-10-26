@@ -4,18 +4,31 @@
 using namespace std;
 
 FieldManager::FieldManager() {
-    for (int r = 0; r < SIZE; r++) {
-        for (int c = 0; c < SIZE; c++) {
-            grid[r][c] = '~';
-        }
-    }
-    cout << "[FieldManager]: Створено порожнє поле 10x10.\n";
+    clearField();
+    cout << "[FieldManager]: Створено порожнє багатошарове поле 10x10.\n";
 }
 
 FieldManager::~FieldManager() {
     cout << "[FieldManager]: Ігрове поле знищено.\n";
 }
+void FieldManager::clearField() {
+    ships.clear();
+    mines.clear();
+    for (int l = 0; l < LAYERS; l++) {
+        for (int r = 0; r < SIZE; r++) {
+            for (int c = 0; c < SIZE; c++) {
+                grid[l][r][c] = '~';
+            }
+        }
+    }
+}
 
+bool FieldManager::isInside(int x, int y) const {
+    if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
+        return false;
+    }
+    return true;
+}
 void FieldManager::placeShip(const Ship& ship, int x, int y, bool isHorizontal) {
     int s = ship.getSize();
 
@@ -44,7 +57,11 @@ void FieldManager::printField() const {
     for (int y = 0; y < SIZE; y++) {
         cout << y << " ";
         for (int x = 0; x < SIZE; x++) {
-            cout << grid[y][x] << " ";
+            char c = grid[l][y][x];
+            if (fogOfWar && (c == 'S' || c == 'M')) {
+                c = '~';
+            }
+            cout << c << " ";
         }
         cout << "\n";
     }
