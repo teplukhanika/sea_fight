@@ -4,37 +4,82 @@
 using namespace std;
 
 FieldManager::FieldManager() {
-    for (int r = 0; r < SIZE; r++) {
-        for (int c = 0; c < SIZE; c++) {
-            grid[r][c] = '~';
-        }
-    }
-    cout << "[FieldManager]: Створено порожнє поле 10x10.\n";
+    clearField();
+    cout << "[FieldManager]: Створено порожнє багатошарове поле 10x10.\n";
 }
 
 FieldManager::~FieldManager() {
     cout << "[FieldManager]: Ігрове поле знищено.\n";
 }
+void FieldManager::clearField() {
+    ships.clear();
 
-void FieldManager::placeShip(const Ship& ship, int x, int y, bool isHorizontal) {
-    int s = ship.getSize();
-
-    if (isHorizontal) {
-        for (int i = 0; i < s; i++) {
-            grid[y][x + i] = 'S';
+    for (int l = 0; l < LAYERS; l++) {
+        for (int r = 0; r < SIZE; r++) {
+            for (int c = 0; c < SIZE; c++) {
+                grid[l][r][c] = '~';
+            }
         }
     }
-    else {
-        for (int i = 0; i < s; i++) {
-            grid[y + i][x] = 'S';
+}
+
+bool FieldManager::isInside(int x, int y) const {
+    if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
+        return false;
+    }
+    return true;
+
+}
+
+bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal, MapLayer layer) const {
+    int l = static_cast<int>(layer);
+    for (int i = 0; i < size; i++) {
+        int cx = isHorizontal ? x + i : x;
+        int cy = isHorizontal ? y : y + i;
+
+        if (!isInside(cx, cy)) {
+            return false;
         }
+
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int nx = cx + dx;
+                int ny = cy + dy;
+                if (isInside(nx, ny)) {
+                    if (grid[l][ny][nx] == 'S') {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
+}
+bool FieldManager::placeShip(Ship ship, int x, int y, bool isHorizontal) {
+    MapLayer layer = ship.getLayer();
+
+    if (!canPlace(x, y, ship.getSize(), isHorizontal, layer)) {
+        return false;
+    }
+
+    int l = static_cast<int>(layer);
+    ship.setPosition(x, y, isHorizontal);
+    ships.push_back(ship);
+
+    for (int i = 0; i < ship.getSize(); i++) {
+        int cx = isHorizontal ? x + i : x;
+        int cy = isHorizontal ? y : y + i;
+        grid[l][cy][cx] = 'S';
     }
 
     cout << "[FieldManager]: Поставлено корабель '" << ship.getName()
         << "' у координати (" << x << ", " << y << ")\n";
+
+    return true;
 }
 
-void FieldManager::printField() const {
+void FieldManager::printField(MapLayer layer, bool fogOfWar) const {
+    int l = static_cast<int>(layer);
     cout << "\n<<< Ігрове поле (10x10) >>>\n  ";
     for (int x = 0; x < SIZE; x++) {
         cout << x << " ";
@@ -44,36 +89,82 @@ void FieldManager::printField() const {
     for (int y = 0; y < SIZE; y++) {
         cout << y << " ";
         for (int x = 0; x < SIZE; x++) {
-            cout << grid[y][x] << " ";
+            char c = grid[l][y][x];
+            if (fogOfWar && (c == 'S' || c == 'M')) {
+                c = '~';
+            }
+            cout << c << " ";
         }
         cout << "\n";
     }
     cout << "---------------------------\n\n";
 }
 
-bool FieldManager::shoot(int x, int y) {
+int FieldManager::shoot(int x, int y, MapLayer layer, Ship** outDestroyedShip) {
     if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
         cout << "[FieldManager]: Постріл за межі поля:(\n";
-        return false;
+        return -1;
     }
 
-    if (grid[y][x] == 'S') {
-        grid[y][x] = 'X';
-        cout << "[FieldManager]: :) Влучання у координати (" << x << ", " << y << ")!\n";
-        return true;
+    int l = static_cast<int>(layer);
+
+    if (grid[l][y][x] == 'M') {
+        grid[l][y][x] = 'X';
+        cout << "[FieldManager]: ВИБУХ МОРСЬКОЇ МІНИ у координатах (" << x << ", " << y << ")!\n";
+        return 3;
     }
-    else if (grid[y][x] == '~') {
-        grid[y][x] = '*';
+
+    if (grid[l][y][x] == 'S') {
+        grid[l][y][x] = 'X';
+        cout << "[FieldManager]: :) Влучання у координати (" << x << ", " << y << ")!\n";
+
+        for (size_t i = 0; i < ships.size(); i++) {
+            if (ships[i].occupies(x, y, layer)) {
+                ships[i].hit();
+                if (ships[i].isDestroyed()) {
+                    if (outDestroyedShip != nullptr) {
+                        *outDestroyedShip = &ships[i];
+                    }
+                    cout << "[FieldManager]: Корабель знищено!\n";
+                    return 2;
+                }
+                return 1;
+            }
+        }
+        return 1;
+    }
+    else if (grid[l][y][x] == '~') {
+        grid[l][y][x] = '*';
         cout << "[FieldManager]: :( Промах у координати (" << x << ", " << y << ").\n";
-        return false;
+        return 0;
     }
     else {
         cout << "[FieldManager]: Сюди вже стріляли:(\n";
-        return false;
+        return -1;
+    }
+}
+void FieldManager::markCellAround(int x, int y, MapLayer layer) {
+    int l = static_cast<int>(layer);
+    if (isInside(x, y) && grid[l][y][x] == '~') {
+        grid[l][y][x] = '*';
     }
 }
 
-bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal) const {
+int FieldManager::getAliveShipsCount() const {
+    int alive = 0;
+    for (size_t i = 0; i < ships.size(); i++) {
+        if (!ships[i].isDestroyed()) {
+            alive++;
+        }
+    }
+    return alive;
+}
+
+bool FieldManager::areAllShipsDestroyed() const {
+    return !ships.empty() && getAliveShipsCount() == 0;
+}
+bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal, MapLayer layer) const {
+    int l = static_cast<int>(layer);
     for (int i = 0; i < size; i++) {
         int cx = x;
         int cy = y;
@@ -84,12 +175,131 @@ bool FieldManager::canPlace(int x, int y, int size, bool isHorizontal) const {
         else {
             cy = y + i;
         }
-
-        if (cx < 0 || cx >= SIZE || cy < 0 || cy >= SIZE) {
+        if (!isInside(cx, cy)) {
             return false;
         }
 
-        // метод перевірки розташування поруч корабля
+        // Перевірка буферної зони навколо корабля
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int nx = cx + dx;
+                int ny = cy + dy;
+                if (isInside(nx, ny)) {
+                    if (grid[l][ny][nx] == 'S') {
+                        return false;
+                    }
+                }
+            }
+        }
     }
     return true;
+}
+
+bool FieldManager::placeMine(int x, int y, MapLayer layer) {
+    int l = static_cast<int>(layer);
+
+    if (!isInside(x, y) || grid[l][y][x] != '~') {
+        return false;
+    }
+
+    grid[l][y][x] = 'M';
+    cout << "[FieldManager]: Встановлено морську міну у (" << x << ", " << y << ").\n";
+    return true;
+}
+
+bool FieldManager::moveShip(size_t shipIndex, int dx, int dy) {
+    if (shipIndex >= ships.size()) return false;
+
+    Ship& s = ships[shipIndex];
+    if (s.getHits() > 0) {
+        cout << "[FieldManager]: Пошкоджений корабель не може рухатись!\n";
+        return false;
+    }
+
+    int l = static_cast<int>(s.getLayer());
+    vector<pair<int, int>> oldCells = s.getOccupiedCells();
+
+    for (size_t i = 0; i < oldCells.size(); i++) {
+        grid[l][oldCells[i].second][oldCells[i].first] = '~';
+    }
+
+    int newX = s.getStartX() + dx;
+    int newY = s.getStartY() + dy;
+
+    if (canPlace(newX, newY, s.getSize(), s.getIsHorizontal(), s.getLayer())) {
+        s.setPosition(newX, newY, s.getIsHorizontal());
+        vector<pair<int, int>> newCells = s.getOccupiedCells();
+        for (size_t i = 0; i < newCells.size(); i++) {
+            grid[l][newCells[i].second][newCells[i].first] = 'S';
+        }
+        cout << "[FieldManager]: Корабель перемістився у (" << newX << ", " << newY << ").\n";
+        return true;
+    }
+    else {
+        for (size_t i = 0; i < oldCells.size(); i++) {
+            grid[l][oldCells[i].second][oldCells[i].first] = 'S';
+        }
+        return false;
+    }
+}
+
+bool FieldManager::repairDamagedShip() {
+    for (size_t i = 0; i < ships.size(); i++) {
+        if (ships[i].repairOneDeck()) {
+            int l = static_cast<int>(ships[i].getLayer());
+            vector<pair<int, int>> cells = ships[i].getOccupiedCells();
+            for (size_t c = 0; c < cells.size(); c++) {
+                if (grid[l][cells[c].second][cells[c].first] == 'X') {
+                    grid[l][cells[c].second][cells[c].first] = 'S';
+                    break;
+                }
+            }
+            cout << "[FieldManager]: Відремонтовано 1 палубу корабля '" << ships[i].getName() << "'!\n";
+            return true;
+        }
+    }
+    return false;
+}
+
+int FieldManager::scanArea(int centerX, int centerY, MapLayer layer) const {
+    int l = static_cast<int>(layer);
+    int detectedDecks = 0;
+
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            int nx = centerX + dx;
+            int ny = centerY + dy;
+            if (isInside(nx, ny) && (grid[l][ny][nx] == 'S' || grid[l][ny][nx] == 'M')) {
+                detectedDecks++;
+            }
+        }
+    }
+    return detectedDecks;
+}
+
+
+void FieldManager::printSideBySide(const FieldManager& ownField, const FieldManager& enemyField, MapLayer layer) {
+    int l = static_cast<int>(layer);
+
+    cout << "\n  === ВЛАСНЕ ПОЛЕ ===                  === ПОЛЕ ВОРОГА ===\n";
+    cout << "  0 1 2 3 4 5 6 7 8 9                  0 1 2 3 4 5 6 7 8 9\n";
+
+    for (int y = 0; y < SIZE; y++) {
+        cout << y << " ";
+        for (int x = 0; x < SIZE; x++) {
+            cout << ownField.grid[l][y][x] << " ";
+        }
+
+        cout << "                 " << y << " ";
+
+        for (int x = 0; x < SIZE; x++) {
+            char c = enemyField.grid[l][y][x];
+            if (c == 'S' || c == 'M') {
+                c = '~';
+            }
+            cout << c << " ";
+        }
+        cout << "\n";
+    }
+    cout << "----------------------------------------------------------\n\n";
 }
