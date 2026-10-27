@@ -6,6 +6,8 @@
 
 using namespace std;
 
+class FieldManager;
+
 class PlayerProfile {
 private:
     string name;
@@ -32,7 +34,10 @@ public:
     bool spendCoins(int amount);
 
     void addItemToInventory(const string& itemName, int quantity = 1);
-    bool hasItem(const std::string& itemName) const;
+    bool hasItem(const string& itemName) const;
+
+    bool useInventoryItem(const string& itemName, FieldManager& ownField,
+        FieldManager& enemyField, int targetX, int targetY);
 
     void displayProfile() const;
 };

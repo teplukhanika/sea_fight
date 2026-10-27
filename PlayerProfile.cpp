@@ -1,4 +1,5 @@
 #include "PlayerProfile.h"
+#include "FieldManager.h"
 
 PlayerProfile::PlayerProfile(const string& playerName) {
     name = playerName;
@@ -57,7 +58,40 @@ void PlayerProfile::addItemToInventory(const string& itemName, int quantity) {
     inventory[itemName] += quantity;
 }
 
+bool PlayerProfile::hasItem(const string& itemName) const {
+    auto it = inventory.find(itemName);
+    return it != inventory.end() && it->second > 0;
+}
 
+bool PlayerProfile::useInventoryItem(const string& itemName, FieldManager& ownField,
+    FieldManager& enemyField, int targetX, int targetY) {
+    if (!hasItem(itemName)) {
+        cout << "[Інвентар]: У гравця " << name << " немає предмета '" << itemName << "'!\n";
+        return false;
+    }
+
+    inventory[itemName]--;
+    if (inventory[itemName] == 0) inventory.erase(itemName);
+
+    cout << "[Інвентар]: Гравець " << name << " активує спецзасіб '" << itemName << "'!\n";
+    if (itemName == "Радар") {
+        int found = enemyField.scanArea(targetX, targetY, MapLayer::WATER);
+        cout << "  -> [Радар]: У радіусі 3x3 навколо (" << targetX << "," << targetY
+            << ") виявлено об'єктів противника: " << found << " шт.\n";
+    }
+    else if (itemName == "Міна") {
+        ownField.placeMine(targetX, targetY, MapLayer::WATER);
+    }
+    else if (itemName == "Ремкомплект") {
+        ownField.repairDamagedShip();
+    }
+    else if (itemName == "Авіаудар") {
+        for (int dx = 0; dx < 3; dx++) {
+            enemyField.shoot(targetX + dx, targetY, MapLayer::WATER);
+        }
+    }
+    return true;
+}
 
 void PlayerProfile::displayProfile() const {
     cout << "\n|^^^^ ПРОФІЛЬ ГРАВЦЯ: " << name << " [" << rankTitle << "] ^^^^|" << endl;
