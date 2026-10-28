@@ -1,6 +1,68 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="CombatManager.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldManager.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameModeManager.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerProfile.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveRecord.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ship.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StoreManager.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SeaMine.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FleetPreset.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GameModeManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerProfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StoreManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SeaMine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FleetPreset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="GameModeManager.cpp" />
@@ -18,5 +80,13 @@
     <ClInclude Include="PlayerProfile.h" />
     <ClInclude Include="ship.h" />
     <ClInclude Include="StoreManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Sourse Files">
+      <UniqueIdentifier>{b8555bea-9d11-405c-a147-41db98e4ed5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{783e44fa-0543-4657-b232-f3da0c4a612e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

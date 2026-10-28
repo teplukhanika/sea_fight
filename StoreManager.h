@@ -1,14 +1,20 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <vector>
 #include "PlayerProfile.h"
 
 using namespace std;
 
+struct StoreItem {
+    std::string name;
+    int price;
+    std::string description;
+};
+
 class StoreManager {
 private:
-    std::map<string, int> catalog;
+    vector<StoreItem> catalog;
 
 public:
     StoreManager();

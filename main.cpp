@@ -19,7 +19,7 @@ int main() {
 
     cout << "Початок тестового сценарію роботи магазину, та профілю гравця..." << endl;
 
-    PlayerProfile player1("Ання");
+    PlayerProfile player1("Рома");
     StoreManager store;
 
     player1.displayProfile();
@@ -27,12 +27,12 @@ int main() {
     store.displayCatalog();
 
     store.buyItem(player1, "Міна");
-    store.buyItem(player1, "Авіаудар (Літак)");
+    store.buyItem(player1, "Авіаудар");
 
-    cout << "\n--- Імітація ігрового бою ---" << endl;
+    cout << "\nІмітація ігрового бою:" << endl;
     player1.recordWin();
 
-    store.buyItem(player1, "Авіаудар (Літак)");
+    store.buyItem(player1, "Авіаудар");
 
     player1.displayProfile();
 
