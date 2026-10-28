@@ -1,39 +1,42 @@
-#ifndef FIELDMANAGER_H
-#define FIELDMANAGER_H
-
-#include "Ship.h"
+﻿#pragma once
 #include <vector>
-const int SIZE = 10;
-const int LAYERS = 2;
+#include "Ship.h"
+#include "SeaMine.h"
+#include "FleetPreset.h"
+
+using namespace std;
 
 
 class FieldManager {
 private:
+    static const int SIZE = 10;
+    static const int LAYERS = 3;
     char grid[LAYERS][SIZE][SIZE];
-    std::vector<Ship> ships;
-
-    void clearField();
-    bool isInside(int x, int y) const;
-    bool canPlace(int x, int y, int size, bool isHorizontal, MapLayer layer) const;
+    vector<Ship> ships;
+    vector<SeaMine> mines;
 
 public:
     FieldManager();
     ~FieldManager();
 
+    void clearField();
+    bool isInside(int x, int y) const;
+    bool canPlace(int x, int y, int size, bool isHorizontal, MapLayer layer = MapLayer::WATER) const;
     bool placeShip(Ship ship, int x, int y, bool isHorizontal);
-    void printField(MapLayer layer, bool fogOfWar = false) const;
-    int shoot(int x, int y, MapLayer layer, Ship** outDestroyedShip = nullptr);
-    bool canPlace(int x, int y, int size, bool isHorizontal) const;
-    bool placeMine(int x, int y, MapLayer layer);
+    void autoPlaceFleet(const FleetPreset& preset, int seedOffset = 0);
+    bool placeMine(int x, int y, MapLayer layer = MapLayer::WATER);
     bool moveShip(size_t shipIndex, int dx, int dy);
     bool repairDamagedShip();
-    int scanArea(int centerX, int centerY, MapLayer layer) const;
+    int scanArea(int centerX, int centerY, MapLayer layer = MapLayer::WATER) const;
 
-    void markCellAround(int x, int y, MapLayer layer);
+    // Повертає: 0 - промах, 1 - влучання, 2 - знищено, 3 - міна, -1 - помилка/повтор
+    int shoot(int x, int y, MapLayer layer = MapLayer::WATER, Ship** outDestroyedShip = nullptr);
+    void markCellAround(int x, int y, MapLayer layer = MapLayer::WATER);
+
     int getAliveShipsCount() const;
     bool areAllShipsDestroyed() const;
 
-    static void printSideBySide(const FieldManager& ownField, const FieldManager& enemyField, MapLayer layer);
-};
+    void printField(MapLayer layer = MapLayer::WATER, bool fogOfWar = false) const;
+    static void printSideBySide(const FieldManager& ownField, const FieldManager& enemyField, MapLayer layer = MapLayer::WATER);
 
-#endif 
+};

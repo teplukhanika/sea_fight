@@ -17,7 +17,7 @@ Ship::Ship(string shipName, int shipSize, MapLayer shipLayer, bool tanker, bool 
     cout << "[Ship]: Створено корабель '" << name << "' (Розмір: " << size << ")\n";
 }
 Ship::~Ship() {
-    cout << "[Ship]: Знищено корабель'" << name << "'\n";
+   // cout << "[Ship]: Знищено корабель'" << name << "'\n";
 }
 void Ship::setPosition(int x, int y, bool horiz) {
     startX = x;
