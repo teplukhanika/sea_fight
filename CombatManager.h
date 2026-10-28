@@ -1,23 +1,30 @@
 #pragma once
+#include <vector>
 #include "MoveRecord.h"
 #include "FieldManager.h"
 
+using namespace std;
+
 class CombatManager {
 private:
-
-    static const int MAX_HISTORY = 100;
-    MoveRecord history[MAX_HISTORY];
-    int historyCount;
     int currentPlayer;
+    int totalTurns;
+    vector<MoveRecord> history;
+    FieldManager* fieldP1;
+    FieldManager* fieldP2;
 
 public:
-    CombatManager(int startPlayer = 1);
+    CombatManager(FieldManager* f1 = nullptr, FieldManager* f2 = nullptr);
+    void bindFields(FieldManager* f1, FieldManager* f2);
 
-    ShotResult processShot(FieldManager& field, int x, int y);
+    void autoSurroundDestroyedShip(FieldManager& field, const Ship& ship);
+    void triggerTankerExplosion(FieldManager& field, const Ship& tanker);
 
-    void volleyFire(FieldManager& field, const int targetX[], const int targetY[], int count);
+    ShotResult processShot(FieldManager& targetField, int x, int y, MapLayer layer = MapLayer::WATER);
+    void volleyFire(FieldManager& targetField, const vector<pair<int, int>>& targets, MapLayer layer = MapLayer::WATER);
 
     void switchTurn();
     int getCurrentPlayer() const;
+    double getPlayerAccuracy(int playerId) const;
     void printHistory() const;
 };
