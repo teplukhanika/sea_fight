@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+using namespace std;
 enum class GameMode {
     NOT_SELECTED,
     PVE,
@@ -18,15 +18,15 @@ class GameModeManager {
 private:
     GameMode currentMode;
     TurnOwner currentTurn;
-    std::string player1Name;
-    std::string player2Name;
+    string player1Name;
+    string player2Name;
     int turnNumber;
     bool isGameActive;
 
 public:
     GameModeManager();
 
-    void selectGameMode(GameMode mode, const std::string& p1Name, const std::string& p2Name = "AI_Bot");
+    void selectGameMode(GameMode mode, const string& p1Name, const string& p2Name = "AI_Bot");
 
     void startMatch();
 
@@ -36,7 +36,7 @@ public:
 
     GameMode getGameMode() const;
     TurnOwner getCurrentTurn() const;
-    std::string getCurrentPlayerName() const;
+    string getCurrentPlayerName() const;
     int getTurnNumber() const;
     bool isMatchActive() const;
     void printStatus() const;
