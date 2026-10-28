@@ -139,6 +139,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MoveRecord.cpp" />
     <ClCompile Include="PlayerProfile.cpp" />
+    <ClCompile Include="SeaMine.cpp" />
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
@@ -149,6 +150,7 @@
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="GameModeManager.h" />
     <ClInclude Include="PlayerProfile.h" />
+    <ClInclude Include="SeaMine.h" />
     <ClInclude Include="ship.h" />
     <ClInclude Include="StoreManager.h" />
   </ItemGroup>
