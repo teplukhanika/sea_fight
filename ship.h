@@ -1,43 +1,44 @@
-#ifndef SHIP_H
-#define SHIP_H
-
+#pragma once
 #include <string>
 #include <vector>
+#include <utility>
+#include "MapLayer.h"
 
-enum class MapLayer {
-    SURFACE = 0,
-    UNDERWATER = 1
-};
+using namespace std;
 
 class Ship {
 private:
     std::string name;
     int size;
+    int hits;
     int startX;
     int startY;
     bool isHorizontal;
     MapLayer layer;
-    int hits;
+    bool isTanker;
+    bool canCounter;
 
 public:
-    Ship(std::string shipName, int shipSize, MapLayer shipLayer = MapLayer::SURFACE);
+    Ship(string shipName, int shipSize, MapLayer shipLayer = MapLayer::WATER, bool tanker = false, bool counter = false);
     ~Ship();
 
-    std::string getName() const;
+    void setPosition(int x, int y, bool horiz);
+
+    string getName() const;
     int getSize() const;
-    MapLayer getLayer() const;
     int getHits() const;
+    int getRemainingHP() const;
     int getStartX() const;
     int getStartY() const;
     bool getIsHorizontal() const;
+    MapLayer getLayer() const;
+    bool getIsTanker() const;
+    bool getCanCounter() const;
 
-    void setPosition(int x, int y, bool isHoriz);
-    bool occupies(int x, int y, MapLayer checkLayer) const;
     void hit();
-    bool isDestroyed() const;
     bool repairOneDeck();
+    bool isDestroyed() const;
 
-    std::vector<std::pair<int, int>> getOccupiedCells() const;
+    vector<pair<int, int>> getOccupiedCells() const;
+    bool occupies(int x, int y, MapLayer targetLayer) const;
 };
-
-#endif 

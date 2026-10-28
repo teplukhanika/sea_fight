@@ -3,19 +3,26 @@
 
 using namespace std;
 
-Ship::Ship(string shipName, int shipSize, MapLayer shipLayer) {
+Ship::Ship(string shipName, int shipSize, MapLayer shipLayer, bool tanker, bool counter) {
     name = shipName;
     size = shipSize;
-    layer = shipLayer;
-    startX = -1;
-    startY = -1;
-    isHorizontal = true;
     hits = 0;
+    startX = 0;
+    startY = 0;
+    isHorizontal = true;
+    layer = shipLayer;
+    isTanker = tanker;
+    canCounter = counter;
+
     cout << "[Ship]: Створено корабель '" << name << "' (Розмір: " << size << ")\n";
 }
-
 Ship::~Ship() {
-    cout << "[Ship]: Знищено корабель'" << name << "'\n";
+   // cout << "[Ship]: Знищено корабель'" << name << "'\n";
+}
+void Ship::setPosition(int x, int y, bool horiz) {
+    startX = x;
+    startY = y;
+    isHorizontal = horiz;
 }
 
 string Ship::getName() const {
@@ -25,50 +32,85 @@ string Ship::getName() const {
 int Ship::getSize() const {
     return size;
 }
-MapLayer Ship::getLayer() const { return layer; }
-int Ship::getHits() const { return hits; }
-int Ship::getStartX() const { return startX; }
-int Ship::getStartY() const { return startY; }
-bool Ship::getIsHorizontal() const { return isHorizontal; }
 
-void Ship::setPosition(int x, int y, bool isHoriz) {
-    startX = x;
-    startY = y;
-    isHorizontal = isHoriz;
+int Ship::getHits() const {
+    return hits;
 }
 
-bool Ship::occupies(int x, int y, MapLayer checkLayer) const {
-    if (layer != checkLayer) return false;
-    for (int i = 0; i < size; i++) {
-        int cx = isHorizontal ? startX + i : startX;
-        int cy = isHorizontal ? startY : startY + i;
-        if (cx == x && cy == y) return true;
-    }
-    return false;
+int Ship::getRemainingHP() const {
+    return size - hits;
+}
+
+int Ship::getStartX() const {
+    return startX;
+}
+
+int Ship::getStartY() const {
+    return startY;
+}
+
+bool Ship::getIsHorizontal() const {
+    return isHorizontal;
+}
+
+MapLayer Ship::getLayer() const {
+    return layer;
+}
+
+bool Ship::getIsTanker() const {
+    return isTanker;
+}
+
+bool Ship::getCanCounter() const {
+    return canCounter;
 }
 
 void Ship::hit() {
-    if (hits < size) hits++;
-}
-
-bool Ship::isDestroyed() const {
-    return hits >= size;
+    if (hits < size) {
+        hits++;
+    }
 }
 
 bool Ship::repairOneDeck() {
-    if (hits > 0) {
+    if (hits > 0 && !isDestroyed()) {
         hits--;
         return true;
     }
     return false;
 }
 
+bool Ship::isDestroyed() const {
+    return hits >= size;
+}
+
 vector<pair<int, int>> Ship::getOccupiedCells() const {
     vector<pair<int, int>> cells;
     for (int i = 0; i < size; i++) {
-        int cx = isHorizontal ? startX + i : startX;
-        int cy = isHorizontal ? startY : startY + i;
+        int cx = startX;
+        int cy = startY;
+
+        if (isHorizontal) {
+            cx = startX + i;
+        }
+        else {
+            cy = startY + i;
+        }
+
         cells.push_back({ cx, cy });
     }
     return cells;
+}
+
+bool Ship::occupies(int x, int y, MapLayer targetLayer) const {
+    if (layer != targetLayer) {
+        return false;
+    }
+
+    vector<pair<int, int>> cells = getOccupiedCells();
+    for (size_t i = 0; i < cells.size(); i++) {
+        if (cells[i].first == x && cells[i].second == y) {
+            return true;
+        }
+    }
+    return false;
 }

@@ -25,6 +25,12 @@
     <ClCompile Include="StoreManager.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
+    <ClCompile Include="SeaMine.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FleetPreset.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModeManager.h">
@@ -46,6 +52,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StoreManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SeaMine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FleetPreset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
