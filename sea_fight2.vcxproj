@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BotAI.cpp" />
     <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="FleetPreset.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BotAI.h" />
     <ClInclude Include="CombatManager.h" />
     <ClInclude Include="FleetPreset.h" />
     <ClInclude Include="MapLayer.h" />

@@ -1,7 +1,13 @@
 #pragma once
 #include <string>
 #include <iostream>
-
+#include "PlayerProfile.h"
+#include "FieldManager.h"
+#include "CombatManager.h"
+#include "MapLayer.h"
+#include <utility>
+#include "BotAI.h"
+using namespace std;
 enum class GameMode {
     NOT_SELECTED,
     PVE,
@@ -18,15 +24,27 @@ class GameModeManager {
 private:
     GameMode currentMode;
     TurnOwner currentTurn;
-    std::string player1Name;
-    std::string player2Name;
-    int turnNumber;
+    PlayerProfile* player1;
+    PlayerProfile* player2;
+    FieldManager field1;
+    FieldManager field2;
+    CombatManager combat;
+    BotAI bot;
+    int roundNumber;
     bool isGameActive;
 
 public:
-    GameModeManager();
+    GameModeManager()
+        : currentMode(GameMode::NOT_SELECTED), currentTurn(TurnOwner::PLAYER_1),
+        player1(nullptr), player2(nullptr), roundNumber(1), isGameActive(false) {
+        combat.bindFields(&field1, &field2);
+    }
+    FieldManager& getField1() { return field1; }
+    FieldManager& getField2() { return field2; }
+    CombatManager& getCombat() { return combat; }
 
-    void selectGameMode(GameMode mode, const std::string& p1Name, const std::string& p2Name = "AI_Bot");
+    void setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2 = nullptr);
+    bool playTurn(int targetX, int targetY, MapLayer layer = MapLayer::WATER);
 
     void startMatch();
 
@@ -36,8 +54,9 @@ public:
 
     GameMode getGameMode() const;
     TurnOwner getCurrentTurn() const;
-    std::string getCurrentPlayerName() const;
+    string getCurrentPlayerName() const;
     int getTurnNumber() const;
     bool isMatchActive() const;
     void printStatus() const;
+    void setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2 = nullptr);
 };
