@@ -58,5 +58,4 @@ public:
     int getTurnNumber() const;
     bool isMatchActive() const;
     void printStatus() const;
-    void setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2 = nullptr);
 };
