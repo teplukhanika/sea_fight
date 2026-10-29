@@ -34,6 +34,9 @@
     <ClCompile Include="BotAI.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
+    <ClCompile Include="RegistrationManager.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModeManager.h">
@@ -75,6 +78,9 @@
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
     <ClInclude Include="BotAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegistrationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
