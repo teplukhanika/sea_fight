@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BotAI.cpp" />
     <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
     <ClCompile Include="FleetPreset.cpp" />
@@ -140,11 +141,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MoveRecord.cpp" />
     <ClCompile Include="PlayerProfile.cpp" />
+    <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="SeaMine.cpp" />
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BotAI.h" />
     <ClInclude Include="CombatManager.h" />
     <ClInclude Include="FleetPreset.h" />
     <ClInclude Include="MapLayer.h" />
@@ -152,6 +155,7 @@
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="GameModeManager.h" />
     <ClInclude Include="PlayerProfile.h" />
+    <ClInclude Include="RegistrationManager.h" />
     <ClInclude Include="SeaMine.h" />
     <ClInclude Include="ship.h" />
     <ClInclude Include="StoreManager.h" />

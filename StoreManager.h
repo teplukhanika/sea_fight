@@ -7,9 +7,9 @@
 using namespace std;
 
 struct StoreItem {
-    std::string name;
+    string name;
     int price;
-    std::string description;
+    string description;
 };
 
 class StoreManager {
@@ -20,5 +20,5 @@ public:
     StoreManager();
 
     void displayCatalog() const;
-    void buyItem(PlayerProfile& player, const string& itemName);
+    bool buyItem(PlayerProfile& player, const string& itemName);
 };

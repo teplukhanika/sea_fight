@@ -4,7 +4,7 @@
 PlayerProfile::PlayerProfile(const string& playerName) {
     name = playerName;
     rankTitle = "Курсант";
-    coins = 10;
+    coins = 15;
     wins = 0;
     losses = 0;
     totalDestroyedShips = 0;
@@ -94,7 +94,7 @@ bool PlayerProfile::useInventoryItem(const string& itemName, FieldManager& ownFi
 }
 
 void PlayerProfile::displayProfile() const {
-    cout << "\n|^^^^ ПРОФІЛЬ ГРАВЦЯ: " << name << " [" << rankTitle << "] ^^^^|" << endl;
+    cout << "\n|^^^^^^^^^^^^^^^^ ПРОФІЛЬ ГРАВЦЯ: " << name << " [" << rankTitle << "] ^^^^^^^^^^^^^^^^|" << endl;
     cout << "Баланс: " << coins << " монет" << endl;
     cout << "Статистика: " << wins << " перемог / " << losses << " поразок" << " | Потоплено кораблів: " << totalDestroyedShips << endl;
     cout << "Інвентар:" << endl;
@@ -106,5 +106,5 @@ void PlayerProfile::displayProfile() const {
             cout << "  - " << item.first << ": " << item.second << " шт." << endl;
         }
     }
-    cout << "|______________________________|\n" << endl;
+    cout << "|_________________________________________________________________|\n" << endl;
 }

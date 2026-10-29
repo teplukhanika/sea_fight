@@ -18,6 +18,8 @@ private:
     int totalDestroyedShips;
     map<string, int> inventory;
 
+    void updateRank();
+
 public:
     PlayerProfile(const string& playerName = "Гість");
 
