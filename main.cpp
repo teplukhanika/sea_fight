@@ -1,14 +1,30 @@
 ﻿#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <iomanip>
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
+// Частина 1: Ніка
+#include "SeaMine.h"
 #include "Ship.h"
+#include "FleetPreset.h"
 #include "FieldManager.h"
-#include "GameModeManager.h"
-#include "PlayerProfile.h"
-#include "StoreManager.h"
 
-
+// Частина 2: Міша
+#include "MoveRecord.h"
 #include "CombatManager.h"
 
+// Частина 4: Яна
+#include "PlayerProfile.h"
+#include "RegistrationManager.h"
+#include "StoreManager.h"
+
+// Частина 3: Нікіта
+#include "BotAI.h"
+#include "GameModeManager.h"
 
 using namespace std;
 
@@ -17,130 +33,50 @@ int main() {
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
 
-    cout << "Початок тестового сценарію роботи магазину, та профілю гравця..." << endl;
+    // Яна
+    RegistrationManager regManager;
+    PlayerProfile* roma = regManager.registerOrLogin("Рома");
+    PlayerProfile* nika = regManager.registerOrLogin("Ніка");
+    regManager.printAllProfiles();
 
-    PlayerProfile player1("Рома");
     StoreManager store;
-
-    player1.displayProfile();
-
     store.displayCatalog();
+    store.buyItem(*roma, "Радар");
+    store.buyItem(*roma, "Міна");
+    store.buyItem(*roma, "Ремкомплект");
+    roma->displayProfile();
 
-    store.buyItem(player1, "Міна");
-    store.buyItem(player1, "Авіаудар");
+	// Ніка і Нікіта
+    GameModeManager game;
+    game.setupMatch(GameMode::PVE, roma);
 
-    cout << "\nІмітація ігрового бою:" << endl;
-    player1.recordWin();
+    game.getField1().placeShip(Ship("Крейсер Роми", 2, MapLayer::WATER, false, true), 1, 1, true);
+    game.getField1().placeShip(Ship("Катер Роми", 1, MapLayer::WATER, false, false), 5, 5, true);
 
-    store.buyItem(player1, "Авіаудар");
+    game.getField2().placeShip(Ship("Танкер Бота", 2, MapLayer::WATER, true, false), 2, 2, true);
+    game.getField2().placeShip(Ship("Субмарина Бота", 2, MapLayer::UNDERWATER, false, false), 0, 0, true);
 
-    player1.displayProfile();
+    roma->useInventoryItem("Міна", game.getField1(), game.getField2(), 0, 0);
+    roma->useInventoryItem("Радар", game.getField1(), game.getField2(), 2, 2);
 
-    cout << "Цей тестовий сценарій завершено." << endl;
+    game.getField1().moveShip(1, 1, 0);
 
+    FieldManager::printSideBySide(game.getField1(), game.getField2(), MapLayer::WATER);
 
+	// Міша і Нікіта
+    cout << "\n--- ПОЧАТОК БОЙОВИХ ДІЙ ---\n";
+    game.playTurn(0, 5, MapLayer::WATER);
+    game.playTurn(0, 0, MapLayer::WATER);
 
-    cout << "тест 1: Клас Ship \n";
-    Ship ship1("Катер", 2);
-    Ship ship2("Лінкор", 4);
+    game.playTurn(2, 2, MapLayer::WATER);
+    game.playTurn(3, 2, MapLayer::WATER);
 
-    cout << "Перевірка геттерів: " << ship1.getName() << " (Розмір: " << ship1.getSize() << ")\n";
-    cout << "Перевірка геттерів: " << ship2.getName() << " (Розмір: " << ship2.getSize() << ")\n\n";
+    game.playTurn(0, 0, MapLayer::UNDERWATER);
+    game.playTurn(1, 0, MapLayer::UNDERWATER);
 
-    cout << "тест 2: Розміщення кораблів \n";
-    FieldManager field;
-
-    field.placeShip(ship1, 0, 0, true);
-    field.placeShip(ship2, 3, 2, false);
-
-    field.printField();
-
-    cout << "тест 3: Перевірка межі та стану\n";
-
-    bool validPlace = field.canPlace(5, 5, 3, true);
-    cout << "Чи можна поставити у (5,5), розмір 3, горизонт: ";
-    if (validPlace) {
-        cout << "так\n";
-    }
-    else {
-        cout << "ні\n";
-    }
-
-    bool invalidPlace = field.canPlace(9, 9, 3, true);
-    cout << "Чи можна поставити у (9,9), розмір 3, горизонт (за межі): ";
-    if (invalidPlace) {
-        cout << "так\n\n";
-    }
-    else {
-        cout << "ні\n\n";
-    }
-
-    cout << "тест 4: Постріли по полю \n";
-
-    field.shoot(0, 0);
-
-    field.shoot(5, 5);
-
-    field.shoot(0, 0);
-
-    field.shoot(12, 3);
-
-    cout << "\nСтан поля після всіх дій \n";
-    field.printField();
-    cout << "тест 5: GameModeManager\n\n";
-
-    GameModeManager modeManager;
-
-    cout << "режим PvE (Гра з ботом)\n";
-    modeManager.selectGameMode(GameMode::PVE, "Alex");
-    modeManager.startMatch();
-    modeManager.printStatus();
-
-    cout << "\nСимуляція ходів у PvE (промах та влучання)\n";
-    modeManager.switchTurn(false); 
-    modeManager.switchTurn(true);  
-    modeManager.switchTurn(false); 
-    modeManager.printStatus();
-
-    cout << "\nЗавершення PvE та перемикання на PvP\n";
-    modeManager.endMatch();
-    
-    cout << "\n";
-    modeManager.selectGameMode(GameMode::PVP, "Alex", "Max");
-    modeManager.startMatch();
-    modeManager.switchTurn(false);
-    modeManager.printStatus();
-
-    cout << "відповіді методи класу працюють коректно\n";
-
-
-
-
-    cout << " Підготовка поля\n";
-    FieldManager combatField;
-    Ship ship3("Катер", 2);
-    Ship ship4("Лінкор", 4);
-
-    combatField.placeShip(ship3, 2, 2, true);
-    combatField.placeShip(ship4, 7, 5, false);
-
-    combatField.printField();
-
-    cout << "\nПеребіг бою\n";
-    CombatManager combat(1);
-
-    combat.processShot(combatField, 0, 0);
-    combat.processShot(combatField, 2, 2);
-    combat.processShot(combatField, 3, 2);
-
-    int strikeX[] = { 7, 7, 7 };
-    int strikeY[] = { 5, 6, 7 };
-    combat.volleyFire(combatField, strikeX, strikeY, 3);
-
-    cout << "\nСтан після бою\n";
-    combatField.printField();
-
-    combat.printHistory();
+    FieldManager::printSideBySide(game.getField1(), game.getField2(), MapLayer::WATER);
+    game.getCombat().printHistory();
+    roma->displayProfile();
 
     return 0;
 }

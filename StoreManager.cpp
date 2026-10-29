@@ -19,7 +19,7 @@ void StoreManager::displayCatalog() const {
     cout << "|___________________________|\n" << endl;
 }
 
-void StoreManager::buyItem(PlayerProfile& player, const string& itemName) {
+bool StoreManager::buyItem(PlayerProfile& player, const string& itemName) {
     cout << "[Магазин] Запит на купівлю: '" << itemName << "' гравцем " << player.getName() << "..." << endl;
 
     for (size_t i = 0; i < catalog.size(); i++) {
