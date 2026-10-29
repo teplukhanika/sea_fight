@@ -17,14 +17,14 @@
 #include "MoveRecord.h"
 #include "CombatManager.h"
 
+// Частина 3: Нікіта
+#include "BotAI.h"
+#include "GameModeManager.h"
+
 // Частина 4: Яна
 #include "PlayerProfile.h"
 #include "RegistrationManager.h"
 #include "StoreManager.h"
-
-// Частина 3: Нікіта
-#include "BotAI.h"
-#include "GameModeManager.h"
 
 using namespace std;
 

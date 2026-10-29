@@ -11,12 +11,12 @@ StoreManager::StoreManager() {
 }
 
 void StoreManager::displayCatalog() const {
-    cout << "\n|___ МАГАЗИН СПЕЦЗАСОБІВ ___|" << endl;
+    cout << "\n|______________________ МАГАЗИН СПЕЦЗАСОБІВ ______________________|" << endl;
     for (size_t i = 0; i < catalog.size(); i++) {
         cout << " " << i + 1 << ". " << left << setw(12) << catalog[i].name
             << " | " << catalog[i].price << " монет | " << catalog[i].description << "\n";
     }
-    cout << "|___________________________|\n" << endl;
+    cout << "|_________________________________________________________________|\n" << endl;
 }
 
 bool StoreManager::buyItem(PlayerProfile& player, const string& itemName) {
