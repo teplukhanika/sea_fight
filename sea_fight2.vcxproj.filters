@@ -31,6 +31,7 @@
     <ClCompile Include="FleetPreset.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
+    <ClCompile Include="BotAI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModeManager.h">
@@ -71,6 +72,9 @@
     <ClCompile Include="PlayerProfile.cpp" />
     <ClCompile Include="ship.cpp" />
     <ClCompile Include="StoreManager.cpp" />
+    <ClInclude Include="BotAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CombatManager.h" />
