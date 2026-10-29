@@ -31,7 +31,9 @@
     <ClCompile Include="FleetPreset.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
-    <ClCompile Include="BotAI.cpp" />
+    <ClCompile Include="BotAI.cpp">
+      <Filter>Sourse Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameModeManager.h">
