@@ -169,7 +169,7 @@ bool FieldManager::moveShip(size_t shipIndex, int dx, int dy) {
         return false;
     }
 }
-
+6
 bool FieldManager::repairDamagedShip() {
     for (size_t i = 0; i < ships.size(); i++) {
         if (ships[i].repairOneDeck()) {
