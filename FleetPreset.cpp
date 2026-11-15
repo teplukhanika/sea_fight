@@ -4,18 +4,28 @@ using namespace std;
 
 FleetPreset::FleetPreset(string name) {
     presetName = name;
-
-    defaultShips.push_back(Ship("Лінкор", 4, MapLayer::WATER, false, true));
-    defaultShips.push_back(Ship("Крейсер", 3, MapLayer::WATER, false, true));
-    defaultShips.push_back(Ship("Танкер", 2, MapLayer::WATER, true, false));
-    defaultShips.push_back(Ship("Катер", 1, MapLayer::WATER, false, false));
-    defaultShips.push_back(Ship("Субмарина", 2, MapLayer::UNDERWATER, false, false));
-    defaultShips.push_back(Ship("Авіадрон", 1, MapLayer::AIR, false, false));
+    defaultShips.push_back(new Cruiser());
+    defaultShips.push_back(new TankerShip());
+    defaultShips.push_back(new MovingBoat());
+    defaultShips.push_back(new Submarine());
+    defaultShips.push_back(new AirDrone());
 }
 
-const vector<Ship>& FleetPreset::getShips() const {
-    return defaultShips;
+FleetPreset::~FleetPreset() {
+    for (size_t i = 0; i < defaultShips.size(); i++) {
+        delete defaultShips[i];
+    }
+    defaultShips.clear();
 }
+
+vector<Ship*> FleetPreset::createFleetCopy() const {
+    vector<Ship*> copy;
+    for (size_t i = 0; i < defaultShips.size(); i++) {
+        copy.push_back(defaultShips[i]->clone());
+    }
+    return copy;
+}
+
 
 string FleetPreset::getPresetName() const {
     return presetName;
