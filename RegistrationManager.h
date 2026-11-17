@@ -5,12 +5,17 @@
 
 class RegistrationManager {
 private:
-	std::vector<PlayerProfile> registeredPlayers;
+	std::vector<PlayerProfile> players;
 
 public:
 	RegistrationManager();
 
-	PlayerProfile* registerOrLogin(const std::string& playerName);
-	PlayerProfile* findPlayer(const std::string& playerName);
-	void printAllProfiles() const;
+	PlayerProfile* registerPlayer(const std::string& name);
+
+	void sortAndPrintLeaderboard();
+
+	std::string saveAllToMemoryBuffer() const;
+
+	bool saveToFile(const std::string& path) const;
+	bool loadFromFile(const std::string& path);
 };
