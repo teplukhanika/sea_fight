@@ -13,7 +13,7 @@ private:
 
 public:
     StoreManager();
-
-    void displayCatalog() const;
-    bool buyItem(PlayerProfile& player, const string& itemName);
+    ~StoreManager();
+    
+    void buyItem(PlayerProfile& player, const string& itemName);
 };
