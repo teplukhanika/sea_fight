@@ -2,19 +2,14 @@
 
 #include <string>
 #include <vector>
+#include "ShopItem.h"
 #include "PlayerProfile.h"
 
 using namespace std;
 
-struct StoreItem {
-    string name;
-    int price;
-    string description;
-};
-
 class StoreManager {
 private:
-    vector<StoreItem> catalog;
+    vector<ShopItem*> catalog;
 
 public:
     StoreManager();
