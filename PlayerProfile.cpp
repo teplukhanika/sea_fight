@@ -1,49 +1,50 @@
 #include "PlayerProfile.h"
 #include "FieldManager.h"
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 
-PlayerProfile::PlayerProfile(const string& playerName) {
-    name = playerName;
-    rankTitle = "Курсант";
-    coins = 15;
-    wins = 0;
-    losses = 0;
-    totalDestroyedShips = 0;
+using namespace std;
+
+PlayerProfile::PlayerProfile(const string& playerName, int startCoins, int w, int l)
+    : name(playerName), coins(startCoins), wins(w), losses(l) {
+}
+
+PlayerProfile::PlayerProfile(const PlayerProfile& other)
+    : name(other.name), coins(other.coins), wins(other.wins), losses(other.losses) {
+    for (size_t i = 0; i < other.inventory.size(); i++) {
+        inventory.push_back(other.inventory[i]->clone());
+    }
+}
+
+PlayerProfile& PlayerProfile::operator=(const PlayerProfile& other) {
+    if (this != &other) {
+        for (size_t i = 0; i < inventory.size(); i++) delete inventory[i];
+        inventory.clear();
+        name = other.name;
+        coins = other.coins;
+        wins = other.wins;
+        losses = other.losses;
+        for (size_t i = 0; i < other.inventory.size(); i++) {
+            inventory.push_back(other.inventory[i]->clone());
+        }
+    }
+    return *this;
+}
+
+PlayerProfile::~PlayerProfile() {
+    for (size_t i = 0; i < inventory.size(); i++) delete inventory[i];
 }
 
 string PlayerProfile::getName() const { return name; }
-string PlayerProfile::getRank() const { return rankTitle; }
 int PlayerProfile::getBalance() const { return coins; }
 int PlayerProfile::getWins() const { return wins; }
 int PlayerProfile::getLosses() const { return losses; }
 
-void PlayerProfile::updateRank() {
-    if (wins >= 5) rankTitle = "Адмірал флоту";
-    else if (wins >= 2) rankTitle = "Капітан І рангу";
-    else if (wins >= 1) rankTitle = "Лейтенант";
-    else rankTitle = "Курсант";
-}
 
-void PlayerProfile::recordWin() {
-    wins++;
-    coins += 10;
-    updateRank();
-    cout << "[Система] Гравець " << name << " здобув перемогу! Нараховано 10 монет. Ваше звання: " << rankTitle << endl;
-}
 
-void PlayerProfile::recordLoss() {
-    losses++;
-    coins += 2;
-    cout << "[Система] Гравець " << name << " зазнав поразки. Нараховано +2 монети, як втішний бонус." << endl;
-}
-
-void PlayerProfile::addDestroyedShipKill() {
-    totalDestroyedShips++;
-    coins += 2;
-}
-
-void PlayerProfile::addCoins(int amount) {
-    if (amount > 0) coins += amount;
-}
+void PlayerProfile::recordWin() { wins++; coins += 10; }
+void PlayerProfile::recordLoss() { losses++; coins += 2; }
 
 bool PlayerProfile::spendCoins(int amount) {
     if (amount < 0) return false;
@@ -54,57 +55,63 @@ bool PlayerProfile::spendCoins(int amount) {
     return false;
 }
 
-void PlayerProfile::addItemToInventory(const string& itemName, int quantity) {
-    inventory[itemName] += quantity;
+void PlayerProfile::addItem(ShopItem* item) { inventory.push_back(item); }
+
+bool PlayerProfile::useItem(const string& itemName, FieldManager& ownField, FieldManager& enemyField, int x, int y) {
+    for (size_t i = 0; i < inventory.size(); i++) {
+        if (inventory[i]->getName() == itemName) {
+            inventory[i]->applyEffect(ownField, enemyField, x, y);
+            delete inventory[i];
+            inventory.erase(inventory.begin() + i);
+            return true;
+        }
+    }
+    return false;
 }
 
-bool PlayerProfile::hasItem(const string& itemName) const {
-    auto it = inventory.find(itemName);
-    return it != inventory.end() && it->second > 0;
+string PlayerProfile::serialize() const {
+    string items;
+    for (size_t i = 0; i < inventory.size(); i++) {
+        if (i > 0) items += ",";
+        items += inventory[i]->getName();
+    }
+    return name + ";" + to_string(coins) + ";" + to_string(wins) + ";" +
+        to_string(losses) + ";" + items;
 }
 
-bool PlayerProfile::useInventoryItem(const string& itemName, FieldManager& ownField,
-    FieldManager& enemyField, int targetX, int targetY) {
-    if (!hasItem(itemName)) {
-        cout << "[Інвентар]: У гравця " << name << " немає предмета '" << itemName << "'!\n";
+bool PlayerProfile::deserialize(const string& line, PlayerProfile& out) {
+    vector<string> parts;
+    stringstream ss(line);
+    string token;
+    while (getline(ss, token, ';')) parts.push_back(token);
+    if (!line.empty() && line.back() == ';') parts.push_back("");
+    if (parts.size() < 4 || parts[0].empty()) return false;
+
+    int c, w, l;
+    try {
+        c = stoi(parts[1]);
+        w = stoi(parts[2]);
+        l = stoi(parts[3]);
+    }
+    catch (...) {
         return false;
     }
 
-    inventory[itemName]--;
-    if (inventory[itemName] == 0) inventory.erase(itemName);
-
-    cout << "[Інвентар]: Гравець " << name << " активує спецзасіб '" << itemName << "'!\n";
-    if (itemName == "Радар") {
-        int found = enemyField.scanArea(targetX, targetY, MapLayer::WATER);
-        cout << "  -> [Радар]: У радіусі 3x3 навколо (" << targetX << "," << targetY
-            << ") виявлено об'єктів противника: " << found << " шт.\n";
-    }
-    else if (itemName == "Міна") {
-        ownField.placeMine(targetX, targetY, MapLayer::WATER);
-    }
-    else if (itemName == "Ремкомплект") {
-        ownField.repairDamagedShip();
-    }
-    else if (itemName == "Авіаудар") {
-        for (int dx = 0; dx < 3; dx++) {
-            enemyField.shoot(targetX + dx, targetY, MapLayer::WATER);
+    PlayerProfile result(parts[0], c, w, l);
+    if (parts.size() >= 5 && !parts[4].empty()) {
+        stringstream is(parts[4]);
+        string itemName;
+        while (getline(is, itemName, ',')) {
+            ShopItem* item = createShopItem(itemName);
+            if (item) result.addItem(item);
         }
     }
+    out = result;
     return true;
 }
 
-void PlayerProfile::displayProfile() const {
-    cout << "\n|^^^^^^^^^^^^^^^^ ПРОФІЛЬ ГРАВЦЯ: " << name << " [" << rankTitle << "] ^^^^^^^^^^^^^^^^|" << endl;
-    cout << "Баланс: " << coins << " монет" << endl;
-    cout << "Статистика: " << wins << " перемог / " << losses << " поразок" << " | Потоплено кораблів: " << totalDestroyedShips << endl;
-    cout << "Інвентар:" << endl;
-    if (inventory.empty()) {
-        cout << "  - Інвентар порожній" << endl;
-    }
-    else {
-        for (const auto& item : inventory) {
-            cout << "  - " << item.first << ": " << item.second << " шт." << endl;
-        }
-    }
-    cout << "|_________________________________________________________________|\n" << endl;
+void PlayerProfile::display() const {
+    cout << "  Гравець: " << left << setw(14) << name << " | Монет: " << setw(3) << coins
+        << " | Перемог: " << wins << " | Поразок: " << losses
+        << " | Предметів: " << inventory.size() << "\n";
 }

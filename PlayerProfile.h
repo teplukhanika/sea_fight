@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <iomanip>
+#include "ShopItem.h"
 
 using namespace std;
 
@@ -11,35 +12,31 @@ class FieldManager;
 class PlayerProfile {
 private:
     string name;
-    string rankTitle;
     int coins;
     int wins;
     int losses;
-    int totalDestroyedShips;
-    map<string, int> inventory;
+    std::vector<ShopItem*> inventory;
 
-    void updateRank();
 
 public:
-    PlayerProfile(const string& playerName = "Гість");
+    PlayerProfile(const string& playerName = "Гість", int startCoins = 20, int w = 0, int l = 0);
+    PlayerProfile(const PlayerProfile& other);
+    PlayerProfile& operator=(const PlayerProfile& other);
+    ~PlayerProfile();
 
     string getName() const;
-    string getRank() const;
     int getBalance() const;
     int getWins() const;
     int getLosses() const;
 
-    void addCoins(int amount);
-    void addDestroyedShipKill();
     void recordWin();
     void recordLoss();
     bool spendCoins(int amount);
 
-    void addItemToInventory(const string& itemName, int quantity = 1);
-    bool hasItem(const string& itemName) const;
+    void addItem(ShopItem* item);
+    bool useItem(const std::string& itemName, FieldManager& ownField, FieldManager& enemyField, int x, int y);
 
-    bool useInventoryItem(const string& itemName, FieldManager& ownField,
-        FieldManager& enemyField, int targetX, int targetY);
-
-    void displayProfile() const;
+    string serialize() const;
+    static bool deserialize(const std::string& line, PlayerProfile& out);
+    void display() const;
 };
