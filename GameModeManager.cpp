@@ -3,11 +3,6 @@
 
 using namespace std;
 
-GameModeManager::GameModeManager()
-    : currentMode(GameMode::NOT_SELECTED), currentTurn(TurnOwner::PLAYER_1),
-    player1(nullptr), player2(nullptr), roundNumber(1), isGameActive(false) {
-    combat.bindFields(&field1, &field2);
-}
 
 void GameModeManager::setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2) {
     currentMode = mode;
@@ -23,7 +18,6 @@ void GameModeManager::setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile
     cout << "\n[GameModeManager]: Ініціалізовано матч у режимі "
         << (mode == GameMode::PVE ? "PvE (проти ШІ)" : "PvP (2 гравці)") << "!\n";
 }
-
 string GameModeManager::getCurrentPlayerName() const {
     if (currentTurn == TurnOwner::PLAYER_1 && player1) return player1->getName();
     if (currentTurn == TurnOwner::PLAYER_2 && player2) return player2->getName();
@@ -85,7 +79,6 @@ bool GameModeManager::isMatchActive() const { return isGameActive; }
 GameMode GameModeManager::getGameMode() const { return currentMode; }
 TurnOwner GameModeManager::getCurrentTurn() const { return currentTurn; }
 int GameModeManager::getTurnNumber() const { return roundNumber; }
-
 void GameModeManager::printStatus() const {
     string modeStr = (currentMode == GameMode::PVE) ? "PvE (проти ШІ)" :
         (currentMode == GameMode::PVP) ? "PvP (2 гравці)" : "Не обрано";
