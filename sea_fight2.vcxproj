@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AttackAction.cpp" />
     <ClCompile Include="BotAI.cpp" />
     <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
