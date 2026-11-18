@@ -1,22 +1,20 @@
 #pragma once
 #include <string>
-#include "MapLayer.h"
 
 using namespace std;
 
-enum class ShotResult { MISS, HIT, DESTROYED, MINE_TRIGGERED, INVALID };
+enum class ShotResult { MISS, HIT, DESTROYED, MINE_TRIGGERED };
 
 class MoveRecord {
 private:
-    int turnNum;
+    int turnId;
     int playerId;
     int x, y;
-    MapLayer layer;
+    string attackType;
     ShotResult result;
-    string details;
 
 public:
-    MoveRecord(int turn, int player, int tx, int ty, MapLayer l, ShotResult res, const string& info = "");
+    MoveRecord(int t, int p, int tx, int ty, const string& atk, ShotResult res);
     ShotResult getResult() const;
     int getPlayerId() const;
     string toString() const;
