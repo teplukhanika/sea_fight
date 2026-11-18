@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AttackAction.cpp" />
     <ClCompile Include="BotAI.cpp" />
     <ClCompile Include="CombatManager.cpp" />
     <ClCompile Include="FieldManager.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttackAction.h" />
     <ClInclude Include="BotAI.h" />
     <ClInclude Include="CombatManager.h" />
     <ClInclude Include="FleetPreset.h" />
