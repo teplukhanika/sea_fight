@@ -53,7 +53,7 @@ int main() {
     game.getField1().placeShip(Ship("Крейсер Роми", 2, MapLayer::WATER, false, true), 1, 1, true);
     game.getField1().placeShip(Ship("Катер Роми", 1, MapLayer::WATER, false, false), 5, 5, true);
 
-    game.getField2().placeShip(Ship("Танкер Бота", 2, MapLayer::WATER, true, false), 2, 2, true);
+    game.getField2().placeShip(Ship("Танкер Бота", 4, MapLayer::WATER, true, false), 2, 2, true);
     game.getField2().placeShip(Ship("Субмарина Бота", 2, MapLayer::UNDERWATER, false, false), 0, 0, true);
 
     roma->useInventoryItem("Міна", game.getField1(), game.getField2(), 0, 0);
@@ -70,6 +70,8 @@ int main() {
 
     game.playTurn(2, 2, MapLayer::WATER);
     game.playTurn(3, 2, MapLayer::WATER);
+    game.playTurn(4, 2, MapLayer::WATER);
+    game.playTurn(5, 2, MapLayer::WATER);
 
     game.playTurn(0, 0, MapLayer::UNDERWATER);
     game.playTurn(1, 0, MapLayer::UNDERWATER);
