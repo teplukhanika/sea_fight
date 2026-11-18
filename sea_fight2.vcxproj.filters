@@ -37,7 +37,9 @@
     <ClCompile Include="RegistrationManager.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
-    <ClCompile Include="ShopItem.cpp">
+    <ClCompile Include="ShopItem.cpp" />
+    <ClCompile Include="ShopItem.h" />
+    <ClCompile Include="AttackAction.cpp">
       <Filter>Sourse Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,7 +88,8 @@
     <ClInclude Include="RegistrationManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShopItem.h">
+    <ClInclude Include="ShopItem.h" />
+    <ClInclude Include="AttackAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
