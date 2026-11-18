@@ -141,6 +141,7 @@
     <ClCompile Include="GameModeManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MoveRecord.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerProfile.cpp" />
     <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="SeaMine.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="MoveRecord.h" />
     <ClInclude Include="FieldManager.h" />
     <ClInclude Include="GameModeManager.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerProfile.h" />
     <ClInclude Include="RegistrationManager.h" />
     <ClInclude Include="SeaMine.h" />
