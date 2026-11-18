@@ -1,71 +1,77 @@
 #include "GameModeManager.h"
 #include <iostream>
-
 using namespace std;
 
+GameModeManager::GameModeManager()
+    : currentMode(GameMode::NOT_SELECTED), currentTurn(TurnOwner::PLAYER_1),
+    roundNumber(0), turnCounter(0), isGameActive(false) {
+}
 
-void GameModeManager::setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2) {
+Player* GameModeManager::attacker() const {
+    return currentTurn == TurnOwner::PLAYER_1 ? player1.get() : player2.get();
+}
+
+Player* GameModeManager::defender() const {
+    return currentTurn == TurnOwner::PLAYER_1 ? player2.get() : player1.get();
+}
+
+void GameModeManager::setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2, BotDifficulty difficulty) {
     currentMode = mode;
-    player1 = p1;
-    player2 = p2;
-    field1.clearField();
-    field2.clearField();
-    bot.reset();
+    player1 = make_unique<HumanPlayer>(p1);
+    if (mode == GameMode::PVE) {
+        if (difficulty == BotDifficulty::EASY) player2 = make_unique<EasyBotPlayer>(p2);
+        else                                   player2 = make_unique<SmartBotPlayer>(p2);
+    }
+    else {
+        player2 = make_unique<HumanPlayer>(p2);
+    }
+
     roundNumber = 1;
+    turnCounter = 0;
     isGameActive = true;
     currentTurn = TurnOwner::PLAYER_1;
 
     cout << "\n[GameModeManager]: Ініціалізовано матч у режимі "
         << (mode == GameMode::PVE ? "PvE (проти ШІ)" : "PvP (2 гравці)") << "!\n";
-}
-string GameModeManager::getCurrentPlayerName() const {
-    if (currentTurn == TurnOwner::PLAYER_1 && player1) return player1->getName();
-    if (currentTurn == TurnOwner::PLAYER_2 && player2) return player2->getName();
-    return "ШІ-Флагман (Бот)";
+    player1->printInfo();
+    player2->printInfo();
 }
 
-bool GameModeManager::playTurn(int targetX, int targetY, MapLayer layer) {
-    if (!isGameActive) return false;
+bool GameModeManager::executeNextTurn() {
+    if (!isGameActive || !player1 || !player2) return true;
 
-    FieldManager& targetField = (currentTurn == TurnOwner::PLAYER_1) ? field2 : field1;
-    PlayerProfile* activeProfile = (currentTurn == TurnOwner::PLAYER_1) ? player1 : player2;
-
-    if (currentTurn == TurnOwner::AI_BOT) {
-        pair<int, int> botCoords = bot.makeMove();
-        targetX = botCoords.first;
-        targetY = botCoords.second;
-    }
-
-    ShotResult res = combat.processShot(targetField, targetX, targetY, layer);
-
-    if (currentTurn == TurnOwner::AI_BOT) {
-        bot.notifyShotResult(targetX, targetY, res);
-    }
-
-    if (res == ShotResult::DESTROYED && activeProfile != nullptr) {
-        activeProfile->addDestroyedShipKill();
-    }
-
-    if (targetField.areAllShipsDestroyed()) {
-        cout << "\n********************************************************\n";
-        cout << " ПЕРЕМОГА! Усі кораблі противника повністю знищено!\n";
-        cout << " Переможець матчу: " << getCurrentPlayerName() << "\n";
-        cout << "********************************************************\n";
-        if (currentTurn == TurnOwner::PLAYER_1) {
-            if (player1) player1->recordWin();
-            if (player2) player2->recordLoss();
-        }
-        else {
-            if (player2) player2->recordWin();
-            if (player1) player1->recordLoss();
-        }
+    if (++turnCounter > MAX_TURNS) {
+        cout << "\n[GameModeManager]: Досягнуто ліміт ходів (" << MAX_TURNS << "). НІЧИЯ.\n";
         isGameActive = false;
         return true;
     }
 
+    Player* atk = attacker();
+    Player* def = defender();
+    int playerId = (currentTurn == TurnOwner::PLAYER_1) ? 1 : 2;
+
+    TurnDecision decision = atk->makeTurnDecision(&defaultArtillery);
+    if (decision.attack == nullptr) decision.attack = &defaultArtillery;
+
+    ShotResult res = combat.executeAttack(playerId, decision.attack,
+        def->getField(), &atk->getField(),
+        decision.x, decision.y);
+
+    atk->onShotFeedback(decision.x, decision.y, res);
+
+    if (def->getField().areAllShipsDestroyed()) {
+        finishMatch(atk, def);
+        return true;
+    }
+    if (atk->getField().areAllShipsDestroyed()) {
+        finishMatch(def, atk);
+        return true;
+    }
+
     if (res == ShotResult::MISS || res == ShotResult::MINE_TRIGGERED) {
+        def->getField().updateMovingShips(); // поліморфне зміщення рухомих катерів
         if (currentTurn == TurnOwner::PLAYER_1) {
-            currentTurn = (currentMode == GameMode::PVE) ? TurnOwner::AI_BOT : TurnOwner::PLAYER_2;
+            currentTurn = TurnOwner::PLAYER_2;
         }
         else {
             currentTurn = TurnOwner::PLAYER_1;
@@ -75,16 +81,33 @@ bool GameModeManager::playTurn(int targetX, int targetY, MapLayer layer) {
     return false;
 }
 
+void GameModeManager::finishMatch(Player* winner, Player* loser) {
+    cout << "\n*********************************************************\n";
+    cout << " ПЕРЕМОГА! Усі кораблі противника повністю знищено!\n";
+    cout << " Переможець матчу: " << winner->getName() << " [" << winner->getPlayerType() << "]\n";
+    cout << "*********************************************************\n";
+    if (winner->getProfile()) winner->getProfile()->recordWin();
+    if (loser->getProfile())  loser->getProfile()->recordLoss();
+    isGameActive = false;
+}
+
+string GameModeManager::getCurrentPlayerName() const {
+    Player* p = attacker();
+    return p ? p->getName() : "Невідомий";
+}
+
 bool GameModeManager::isMatchActive() const { return isGameActive; }
 GameMode GameModeManager::getGameMode() const { return currentMode; }
 TurnOwner GameModeManager::getCurrentTurn() const { return currentTurn; }
 int GameModeManager::getTurnNumber() const { return roundNumber; }
+
 void GameModeManager::printStatus() const {
     string modeStr = (currentMode == GameMode::PVE) ? "PvE (проти ШІ)" :
         (currentMode == GameMode::PVP) ? "PvP (2 гравці)" : "Не обрано";
     cout << "----------------------------------------\n"
         << "Статус гри: " << (isGameActive ? "Активна" : "Неактивна") << "\n"
-        << "Режим: " << modeStr << " | Раунд: " << roundNumber << "\n"
-        << "Поточний хід: " << getCurrentPlayerName() << "\n"
-        << "----------------------------------------\n";
+        << "Режим: " << modeStr << " | Раунд: " << roundNumber << " | Ходів: " << turnCounter << "\n"
+        << "Поточний хід: " << getCurrentPlayerName();
+    if (Player* p = attacker()) cout << " [" << p->getPlayerType() << "]";
+    cout << "\n----------------------------------------\n";
 }

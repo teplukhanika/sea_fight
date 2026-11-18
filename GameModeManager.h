@@ -1,26 +1,33 @@
 #pragma once
 #include <string>
-#include "BotAI.h"
+#include <memory>
+#include "Player.h"
 #include "CombatManager.h"
-#include "FieldManager.h"
+#include "AttackAction.h"
 #include "PlayerProfile.h"
 using namespace std;
 
 enum class GameMode { NOT_SELECTED, PVE, PVP };
-enum class TurnOwner { PLAYER_1, PLAYER_2, AI_BOT };
+enum class BotDifficulty { EASY, SMART };
+enum class TurnOwner { PLAYER_1, PLAYER_2 };
 
 class GameModeManager {
 private:
     GameMode currentMode;
     TurnOwner currentTurn;
-    PlayerProfile* player1;    // АГРЕГАЦІЯ: профіль гравця 1
-    PlayerProfile* player2;    // АГРЕГАЦІЯ: профіль гравця 2
-    FieldManager field1;       // КОМПОЗИЦІЯ: поле гравця 1
-    FieldManager field2;       // КОМПОЗИЦІЯ: поле гравця 2 / Бота
-    CombatManager combat;      // КОМПОЗИЦІЯ: бойова система матчу
-    BotAI bot;                 // КОМПОЗИЦІЯ: ШІ-бот
+    unique_ptr<Player> player1;        // КОМПОЗИЦІЯ: менеджер створює і знищує гравців
+    unique_ptr<Player> player2;
+    CombatManager combat;              // КОМПОЗИЦІЯ: бойова система матчу
+    SingleShotAttack defaultArtillery; // стандартна атака, якщо гравець не обрав іншу
     int roundNumber;
+    int turnCounter;
     bool isGameActive;
+
+    static const int MAX_TURNS = 500;  // захист від нескінченного матчу
+
+    Player* attacker() const;
+    Player* defender() const;
+    void finishMatch(Player* winner, Player* loser);
 
 public:
     GameModeManager();
@@ -28,12 +35,14 @@ public:
     GameModeManager(const GameModeManager&) = delete;
     GameModeManager& operator=(const GameModeManager&) = delete;
 
-    FieldManager& getField1() { return field1; }
-    FieldManager& getField2() { return field2; }
-    CombatManager& getCombat() { return combat; }
+    void setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2 = nullptr,
+        BotDifficulty difficulty = BotDifficulty::SMART);
 
-    void setupMatch(GameMode mode, PlayerProfile* p1, PlayerProfile* p2 = nullptr);
-    bool playTurn(int targetX, int targetY, MapLayer layer = MapLayer::WATER);
+    bool executeNextTurn();
+
+    Player* getPlayer1() const { return player1.get(); }
+    Player* getPlayer2() const { return player2.get(); }
+    CombatManager& getCombat() { return combat; }
 
     string getCurrentPlayerName() const;
     bool isMatchActive() const;
