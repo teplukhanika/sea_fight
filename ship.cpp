@@ -1,9 +1,10 @@
 ﻿#include "Ship.h"
+#include "FieldManager.h"
 #include <iostream>
 
 using namespace std;
 
-Ship::Ship(string shipName, int shipSize, MapLayer shipLayer, bool tanker, bool counter) {
+Ship::Ship(string shipName, int shipSize, MapLayer shipLayer) {
     name = shipName;
     size = shipSize;
     hits = 0;
@@ -11,14 +12,9 @@ Ship::Ship(string shipName, int shipSize, MapLayer shipLayer, bool tanker, bool 
     startY = 0;
     isHorizontal = true;
     layer = shipLayer;
-    isTanker = tanker;
-    canCounter = counter;
-
-    cout << "[Ship]: Створено корабель '" << name << "' (Розмір: " << size << ")\n";
+ 
 }
-Ship::~Ship() {
-   // cout << "[Ship]: Знищено корабель'" << name << "'\n";
-}
+Ship::~Ship() {}
 void Ship::setPosition(int x, int y, bool horiz) {
     startX = x;
     startY = y;
@@ -57,13 +53,6 @@ MapLayer Ship::getLayer() const {
     return layer;
 }
 
-bool Ship::getIsTanker() const {
-    return isTanker;
-}
-
-bool Ship::getCanCounter() const {
-    return canCounter;
-}
 
 void Ship::hit() {
     if (hits < size) {
@@ -113,4 +102,87 @@ bool Ship::occupies(int x, int y, MapLayer targetLayer) const {
         }
     }
     return false;
+}
+
+
+bool Ship::canMove() const { 
+    return false;
+}
+void Ship::onTurnEnd(FieldManager& ownField) {}
+
+
+Cruiser::Cruiser() : Ship("Крейсер", 3, MapLayer::WATER) {}
+char Cruiser::getSymbol() const {
+    return 'C'; 
+}
+Ship* Cruiser::clone() const {
+    return new Cruiser(*this); 
+}
+void Cruiser::onDestroy(FieldManager& ownField, FieldManager* attackerField) const {
+    cout << "  -> [Поліморфізм Cruiser]: Крейсер потопає, але здійснює прощальний залп у відповідь у ("
+        << startX << ", " << startY << ")!\n";
+    if (attackerField != nullptr) {
+        attackerField->shoot(startX, startY, MapLayer::WATER);
+    }
+}
+
+TankerShip::TankerShip() : Ship("Танкер", 2, MapLayer::WATER) {}
+char TankerShip::getSymbol() const {
+    return 'T'; 
+}
+Ship* TankerShip::clone() const {
+    return new TankerShip(*this);
+}
+void TankerShip::onDestroy(FieldManager& ownField, FieldManager* attackerField) const {
+    cout << "  -> [Поліморфізм TankerShip]: ДЕТОНАЦІЯ ПАЛЬНОГО! Танкер вибухає в радіусі 2 клітинки довкола себе!\n";
+    vector<pair<int, int>> cells = getOccupiedCells();
+    for (size_t i = 0; i < cells.size(); i++) {
+        for (int dy = -2; dy <= 2; dy++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                ownField.shoot(cells[i].first + dx, cells[i].second + dy, layer);
+            }
+        }
+    }
+}
+
+Submarine::Submarine() : Ship("Субмарина", 2, MapLayer::UNDERWATER) {}
+char Submarine::getSymbol() const {
+    
+    return 'U';
+}
+Ship* Submarine::clone() const {
+    return new Submarine(*this);
+}
+void Submarine::onDestroy(FieldManager& ownField, FieldManager* attackerField) const {
+    cout << "  -> [Поліморфізм Submarine]: Глибинна детонація! Субмарина затонула під водою.\n";
+}
+
+MovingBoat::MovingBoat() : Ship("Рухомий Катер", 1, MapLayer::WATER) {}
+char MovingBoat::getSymbol() const {
+    return 'B';
+}
+bool MovingBoat::canMove() const {
+    return hits == 0;
+}
+Ship* MovingBoat::clone() const {
+    return new MovingBoat(*this);
+}
+void MovingBoat::onTurnEnd(FieldManager& ownField) {
+    if (canMove()) {
+        ownField.tryShiftSingleCellShip(this, 1, 0);
+    }
+}
+void MovingBoat::onDestroy(FieldManager& ownField, FieldManager* attackerField) const {
+    cout << "  -> [Поліморфізм MovingBoat]: Швидкісний катер підірвано!\n";
+}
+
+AirDrone::AirDrone() : Ship("Авіадрон", 1, MapLayer::AIR) {}
+char AirDrone::getSymbol() const {
+    return 'D'; 
+}
+Ship* AirDrone::clone() const {
+    return new AirDrone(*this); 
+}
+void AirDrone::onDestroy(FieldManager& ownField, FieldManager* attackerField) const {
+    cout << "  -> [Поліморфізм AirDrone]: Дрон збито в повітрі!\n";
 }

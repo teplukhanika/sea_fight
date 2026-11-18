@@ -8,11 +8,12 @@ using namespace std;
 class FleetPreset {
 private:
     string presetName;
-    vector<Ship> defaultShips;
+    vector<Ship*> defaultShips;
 
 public:
     FleetPreset(string name = "Стандартна ескадра");
+    ~FleetPreset();
 
-    const vector<Ship>& getShips() const;
+    vector<Ship*> createFleetCopy() const;
     string getPresetName() const;
 };

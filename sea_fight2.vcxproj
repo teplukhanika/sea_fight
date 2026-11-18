@@ -144,6 +144,8 @@
     <ClCompile Include="RegistrationManager.cpp" />
     <ClCompile Include="SeaMine.cpp" />
     <ClCompile Include="ship.cpp" />
+    <ClCompile Include="ShopItem.cpp" />
+    <ClCompile Include="ShopItem.h" />
     <ClCompile Include="StoreManager.cpp" />
   </ItemGroup>
   <ItemGroup>

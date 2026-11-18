@@ -1,40 +1,74 @@
 #include "RegistrationManager.h"
 #include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 
 using namespace std;
 
-RegistrationManager::RegistrationManager() {
-    registeredPlayers.reserve(100);
+RegistrationManager::RegistrationManager() { players.reserve(100); }
+
+PlayerProfile* RegistrationManager::registerPlayer(const string& name) {
+    for (size_t i = 0; i < players.size(); i++) {
+        if (players[i].getName() == name) return &players[i];
+    }
+    players.push_back(PlayerProfile(name));
+    cout << "[Реєстрація]: Створено профіль '" << name << "'.\n";
+    return &players.back();
 }
 
-PlayerProfile* RegistrationManager::registerOrLogin(const string& playerName) {
-    if (playerName.empty()) {
-        cout << "[Реєстрація]: Ім'я не може бути порожнім!\n";
-        return nullptr;
+void RegistrationManager::sortAndPrintLeaderboard() {
+    sort(players.begin(), players.end(), [](const PlayerProfile& a, const PlayerProfile& b) {
+        if (a.getWins() != b.getWins()) return a.getWins() > b.getWins();
+        return a.getBalance() > b.getBalance();
+        });
+    cout << "\n--- ТАБЛИЦЯ ЛІДЕРІВ (Відсортовано за перемогами) ---\n";
+    for (size_t i = 0; i < players.size(); i++) {
+        cout << i + 1 << ".";
+        players[i].display();
     }
-    for (size_t i = 0; i < registeredPlayers.size(); i++) {
-        if (registeredPlayers[i].getName() == playerName) {
-            cout << "[Авторизація]: З поверненням, " << playerName << " (" << registeredPlayers[i].getRank() << ")!\n";
-            return &registeredPlayers[i];
-        }
-    }
-    registeredPlayers.push_back(PlayerProfile(playerName));
-    cout << "[Реєстрація]: Створено новий профіль '" << playerName << "' (Стартовий баланс: 15 монет).\n";
-    return &registeredPlayers.back();
 }
 
-PlayerProfile* RegistrationManager::findPlayer(const string& playerName) {
-    for (size_t i = 0; i < registeredPlayers.size(); i++) {
-        if (registeredPlayers[i].getName() == playerName) return &registeredPlayers[i];
+string RegistrationManager::saveAllToMemoryBuffer() const {
+    stringstream ss;
+    for (size_t i = 0; i < players.size(); i++) {
+        ss << players[i].serialize() << "\n";
     }
-    return nullptr;
+    return ss.str();
 }
 
-void RegistrationManager::printAllProfiles() const {
-    cout << "\n--- БАЗА ЗАРЕЄСТРОВАНИХ ГРАВЦІВ (" << registeredPlayers.size() << ") ---\n";
-    for (size_t i = 0; i < registeredPlayers.size(); i++) {
-        cout << i + 1 << ". " << registeredPlayers[i].getName()
-            << " [" << registeredPlayers[i].getRank() << "] — Монет: "
-            << registeredPlayers[i].getBalance() << ", Перемог: " << registeredPlayers[i].getWins() << "\n";
+bool RegistrationManager::saveToFile(const string& path) const {
+    ofstream out(path);
+    if (!out) {
+        cout << "[Збереження]: Не вдалося відкрити файл '" << path << "' для запису.\n";
+        return false;
     }
+    out << saveAllToMemoryBuffer();
+    if (!out) return false;
+    cout << "[Збереження]: Збережено профілів: " << players.size() << " -> " << path << "\n";
+    return true;
+}
+
+bool RegistrationManager::loadFromFile(const string& path) {
+    ifstream in(path);
+    if (!in) {
+        cout << "[Завантаження]: Файл '" << path << "' не знайдено.\n";
+        return false;
+    }
+    vector<PlayerProfile> loaded;
+    string line;
+    int bad = 0;
+    while (getline(in, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (line.empty()) continue;
+        PlayerProfile p;
+        if (PlayerProfile::deserialize(line, p)) loaded.push_back(p);
+        else bad++;
+    }
+    players = loaded;
+    players.reserve(100);
+    cout << "[Завантаження]: Відновлено профілів: " << players.size();
+    if (bad > 0) cout << " (пропущено пошкоджених рядків: " << bad << ")";
+    cout << "\n";
+    return true;
 }
